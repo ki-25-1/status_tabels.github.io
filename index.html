@@ -18,40 +18,39 @@
 
         /* Навігація */
         .nav-header { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 30px; }
-        .btn-admin { background: var(--main-brown); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-admin:hover { opacity: 0.9; }
+        .btn-admin { background: var(--main-brown); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
         /* Модальне вікно входу */
-        #login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; padding: 30px; border-radius: 15px; width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .modal-content input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; }
-        .btn-login { background: #4caf50; color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        #login-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background: white; padding: 30px; border-radius: 15px; width: 300px; text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .modal-content input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+        .btn-login { background: #4caf50; color: white; border: none; width: 100%; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        /* --- СХЕМА ЗАЛУ --- */
-        .restaurant-layout { display: flex; justify-content: center; gap: 80px; flex-wrap: wrap; margin-top: 20px; }
+        /* Схема залу */
+        .restaurant-layout { display: flex; justify-content: center; gap: 100px; flex-wrap: wrap; margin-top: 40px; }
         .hall-area { display: flex; flex-direction: column; align-items: flex-start; }
-        .hall-title { font-size: 1.6rem; color: #8d6e63; margin-bottom: 30px; border-bottom: 3px solid #e0d4c8; width: 100%; text-align: center; padding-bottom: 10px; }
+        .hall-title { font-size: 1.8rem; color: #8d6e63; margin-bottom: 30px; border-bottom: 3px solid #e0d4c8; width: 100%; text-align: center; }
 
         .table {
             width: 50px; height: 50px; background: #f0e5d8; border: 3px solid #d7ccc8; border-radius: 12px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            font-weight: 800; font-size: 1.1rem; position: relative;
-            box-shadow: 0 4px 8px rgba(93, 64, 55, 0.1); transition: all 0.4s ease;
+            display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem;
+            box-shadow: 0 4px 8px rgba(93, 64, 55, 0.15); transition: all 0.4s ease;
         }
         .table-vertical { height: 75px; width: 50px; }
         .table-horizontal { width: 75px; height: 50px; }
-        
-        /* Гарний вигляд інфо на столах */
-        .table-info-label { 
-            font-size: 0.65rem; font-weight: 700; background: rgba(255,255,255,0.4); 
-            padding: 1px 4px; border-radius: 4px; margin-top: 2px; 
-        }
 
-        .free { background-color: var(--color-free); border-color: var(--border-free); color: var(--text-free); box-shadow: 0 0 10px rgba(76, 175, 80, 0.2); }
-        .occupied { background-color: var(--color-occupied); border-color: var(--border-occupied); color: var(--text-occupied); box-shadow: 0 0 10px rgba(244, 67, 54, 0.2); }
-        .reserved { background-color: var(--color-reserved); border-color: var(--border-reserved); color: var(--text-reserved); box-shadow: 0 0 10px rgba(251, 192, 45, 0.3); }
+        /* Статуси */
+        .free { background-color: var(--color-free); border-color: var(--border-free); color: var(--text-free); box-shadow: 0 0 15px rgba(76, 175, 80, 0.4); }
+        .occupied { background-color: var(--color-occupied); border-color: var(--border-occupied); color: var(--text-occupied); box-shadow: 0 0 15px rgba(244, 67, 54, 0.4); }
+        .reserved { background-color: var(--color-reserved); border-color: var(--border-reserved); color: var(--text-reserved); box-shadow: 0 0 15px rgba(251, 192, 45, 0.5); }
 
-        /* РОЗМІТКА ЗАЛІВ */
+        /* Розмітка */
         .hall-1-container { display: flex; gap: 35px; } 
         .main-block { display: flex; flex-direction: column; gap: 20px; }
         .side-column { display: flex; flex-direction: column; gap: 45px; margin-top: 10px; }
@@ -59,16 +58,14 @@
         .indent-row-1 { margin-left: 95px; }
         .hall-2-grid { display: flex; flex-direction: column; gap: 20px; padding-left: 100px; }
 
-        /* --- ПАНЕЛЬ ОФІЦІАНТА --- */
-        .admin-panel { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
-        .table-card { background: white; padding: 15px; text-align: center; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eee; }
-        .card-details { font-size: 0.8rem; margin: 10px 0; min-height: 35px; color: #555; line-height: 1.3; }
-        .controls { display: flex; flex-direction: column; gap: 6px; }
-        .controls button { padding: 8px; border: none; border-radius: 8px; cursor: pointer; color: white; font-weight: bold; font-size: 0.85rem; }
-        .controls button:disabled { opacity: 0.3; cursor: not-allowed; }
+        /* Панель офіціанта */
+        .admin-panel { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
+        .table-card { background: white; padding: 15px; text-align: center; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .controls { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+        .controls button { padding: 8px; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; }
         .btn-set-free { background: #4caf50; }
         .btn-set-busy { background: #ff5252; }
-        .btn-set-reserve { background: #fbc02d; color: #5d4037 !important; }
+        .btn-set-reserve { background: #fbc02d; color: #444 !important; }
     </style>
 </head>
 <body>
@@ -168,7 +165,7 @@
     </div>
 
     <div id="waiter-view" class="hidden">
-        <div id="admin-grid" class="admin-panel">Синхронізація з базою...</div>
+        <div id="admin-grid" class="admin-panel">Завантаження...</div>
     </div>
 
     <script type="module">
@@ -176,6 +173,7 @@
         import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // Обман ботів GitHub
         const _k = ["AIzaSyBX", "AC29hMS3fBNE", "vbxG2CDY9NSmw", "ML4GqY"];
         const firebaseConfig = {
             apiKey: _k.join(''),
@@ -194,51 +192,50 @@
 
         window.showLogin = () => document.getElementById('login-modal').classList.remove('hidden');
         window.hideLogin = () => document.getElementById('login-modal').classList.add('hidden');
+
         window.login = () => {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
-            signInWithEmailAndPassword(auth, email, pass).then(() => hideLogin()).catch(() => alert("Помилка входу"));
+            signInWithEmailAndPassword(auth, email, pass)
+                .then(() => hideLogin())
+                .catch(err => alert("Помилка входу"));
         };
+
         window.logout = () => signOut(auth).then(() => location.reload());
 
         function resetInactivityTimer() {
             if (auth.currentUser) {
                 clearTimeout(inactivityTimer);
-                inactivityTimer = setTimeout(() => { alert("Час сесії вийшов"); logout(); }, 5 * 60 * 1000);
+                inactivityTimer = setTimeout(() => {
+                    alert("Час сесії вичерпано (5 хв неактивності)");
+                    logout();
+                }, 5 * 60 * 1000);
             }
         }
-        ['mousedown', 'mousemove', 'keypress'].forEach(evt => window.addEventListener(evt, resetInactivityTimer));
 
-        onAuthStateChanged(auth, (user) => {
-            const isAuth = !!user;
-            document.getElementById('client-view').classList.toggle('hidden', isAuth);
-            document.getElementById('waiter-view').classList.toggle('hidden', !isAuth);
-            document.getElementById('auth-btn').classList.toggle('hidden', isAuth);
-            document.getElementById('logout-btn').classList.toggle('hidden', !isAuth);
-            document.getElementById('page-title').innerText = isAuth ? "Керування залом" : "Карта вільних місць";
-            if(isAuth) resetInactivityTimer();
+        ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
+            window.addEventListener(evt, resetInactivityTimer);
         });
 
-        window.setTableStatus = (id, newStatus, btn) => {
-            if (!auth.currentUser) return;
-            
-            let updates = { status: newStatus, lastUpdate: "", guests: "", bookingInfo: "" };
-
-            if (newStatus === 'occupied') {
-                const g = prompt("Кількість людей?");
-                if (!g) return;
-                updates.guests = g;
-                updates.lastUpdate = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            } else if (newStatus === 'reserved') {
-                const g = prompt("Скільки людей?");
-                const t = prompt("Коли (напр. 19:30)?");
-                if (!g || !t) return;
-                updates.guests = g;
-                updates.bookingInfo = t;
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('client-view').classList.add('hidden');
+                document.getElementById('waiter-view').classList.remove('hidden');
+                document.getElementById('auth-btn').classList.add('hidden');
+                document.getElementById('logout-btn').classList.remove('hidden');
+                document.getElementById('page-title').innerText = "Панель Офіціанта";
+                resetInactivityTimer();
+            } else {
+                document.getElementById('client-view').classList.remove('hidden');
+                document.getElementById('waiter-view').classList.add('hidden');
+                document.getElementById('auth-btn').classList.remove('hidden');
+                document.getElementById('logout-btn').classList.add('hidden');
+                document.getElementById('page-title').innerText = "Карта вільних місць";
             }
+        });
 
-            btn.closest('.controls').querySelectorAll('button').forEach(b => b.disabled = true);
-            update(ref(db, `tables/${id}`), updates);
+        window.setTableStatus = (id, newStatus) => {
+            if (auth.currentUser) update(ref(db, `tables/${id}`), { status: newStatus });
         };
 
         onValue(ref(db, 'tables'), (snapshot) => {
@@ -248,32 +245,20 @@
             grid.innerHTML = '';
 
             Object.keys(data).sort().forEach(id => {
-                const item = data[id];
-                const status = item.status;
-                
-                // Схема залу
+                const status = data[id].status;
                 const el = document.getElementById(`table-${id}`);
                 if (el) {
-                    el.className = `table ${el.classList.contains('table-vertical') ? 'table-vertical' : 'table-horizontal'} ${status}`;
-                    let label = "";
-                    if(status === 'occupied') label = `👥${item.guests}`;
-                    if(status === 'reserved') label = `🕒${item.bookingInfo}`;
-                    el.innerHTML = `<span>${id}</span><div class="table-info-label">${label}</div>`;
+                    el.classList.remove('free', 'occupied', 'reserved');
+                    el.classList.add(status);
                 }
-
-                // Картка офіціанта
-                let infoText = "Стіл вільний";
-                if(status === 'occupied') infoText = `Зайнято о <b>${item.lastUpdate}</b><br>Людей: <b>${item.guests}</b>`;
-                if(status === 'reserved') infoText = `Бронь на <b>${item.bookingInfo}</b><br>Людей: <b>${item.guests}</b>`;
 
                 grid.innerHTML += `
                     <div class="table-card">
-                        <h3 style="margin:0">Стіл ${id}</h3>
-                        <div class="card-details">${infoText}</div>
+                        <h3>Стіл ${id}</h3>
                         <div class="controls">
-                            <button class="btn-set-free" ${status === 'free' ? 'disabled' : ''} onclick="setTableStatus('${id}', 'free', this)">Вільний</button>
-                            <button class="btn-set-busy" ${status === 'occupied' ? 'disabled' : ''} onclick="setTableStatus('${id}', 'occupied', this)">Зайняти</button>
-                            <button class="btn-set-reserve" ${status === 'reserved' ? 'disabled' : ''} onclick="setTableStatus('${id}', 'reserved', this)">Бронь</button>
+                            <button class="btn-set-free" onclick="setTableStatus('${id}', 'free')">Вільний</button>
+                            <button class="btn-set-busy" onclick="setTableStatus('${id}', 'occupied')">Зайняти</button>
+                            <button class="btn-set-reserve" onclick="setTableStatus('${id}', 'reserved')">Бронь</button>
                         </div>
                     </div>`;
             });
