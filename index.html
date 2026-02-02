@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Система керування закладом Pro</title>
+    <title>Система керування закладом</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -18,57 +18,57 @@
 
         /* Навігація */
         .nav-header { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 30px; }
-        .btn-admin { background: var(--main-brown); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-admin { background: var(--main-brown); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-admin:hover { opacity: 0.9; }
 
         /* Модальне вікно входу */
-        #login-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000;
-        }
+        #login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: white; padding: 30px; border-radius: 15px; width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .modal-content input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
-        .btn-login { background: #4caf50; color: white; border: none; width: 100%; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .modal-content input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; }
+        .btn-login { background: #4caf50; color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        /* Схема залу */
-        .restaurant-layout { display: flex; justify-content: center; gap: 100px; flex-wrap: wrap; margin-top: 40px; }
+        /* --- СХЕМА ЗАЛУ --- */
+        .restaurant-layout { display: flex; justify-content: center; gap: 80px; flex-wrap: wrap; margin-top: 20px; }
         .hall-area { display: flex; flex-direction: column; align-items: flex-start; }
-        .hall-title { font-size: 1.8rem; color: #8d6e63; margin-bottom: 30px; border-bottom: 3px solid #e0d4c8; width: 100%; text-align: center; }
+        .hall-title { font-size: 1.6rem; color: #8d6e63; margin-bottom: 30px; border-bottom: 3px solid #e0d4c8; width: 100%; text-align: center; padding-bottom: 10px; }
 
         .table {
             width: 50px; height: 50px; background: #f0e5d8; border: 3px solid #d7ccc8; border-radius: 12px; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            font-weight: 800; font-size: 1rem; position: relative;
-            box-shadow: 0 4px 8px rgba(93, 64, 55, 0.15); transition: all 0.4s ease;
+            font-weight: 800; font-size: 1.1rem; position: relative;
+            box-shadow: 0 4px 8px rgba(93, 64, 55, 0.1); transition: all 0.4s ease;
         }
         .table-vertical { height: 75px; width: 50px; }
         .table-horizontal { width: 75px; height: 50px; }
         
-        /* Текст всередині стола для клієнтів */
-        .table-info-label { font-size: 0.6rem; font-weight: 600; opacity: 0.8; margin-top: 2px; }
+        /* Гарний вигляд інфо на столах */
+        .table-info-label { 
+            font-size: 0.65rem; font-weight: 700; background: rgba(255,255,255,0.4); 
+            padding: 1px 4px; border-radius: 4px; margin-top: 2px; 
+        }
 
-        /* Статуси */
-        .free { background-color: var(--color-free); border-color: var(--border-free); color: var(--text-free); }
-        .occupied { background-color: var(--color-occupied); border-color: var(--border-occupied); color: var(--text-occupied); }
-        .reserved { background-color: var(--color-reserved); border-color: var(--border-reserved); color: var(--text-reserved); }
+        .free { background-color: var(--color-free); border-color: var(--border-free); color: var(--text-free); box-shadow: 0 0 10px rgba(76, 175, 80, 0.2); }
+        .occupied { background-color: var(--color-occupied); border-color: var(--border-occupied); color: var(--text-occupied); box-shadow: 0 0 10px rgba(244, 67, 54, 0.2); }
+        .reserved { background-color: var(--color-reserved); border-color: var(--border-reserved); color: var(--text-reserved); box-shadow: 0 0 10px rgba(251, 192, 45, 0.3); }
 
-        /* Панель офіціанта */
-        .admin-panel { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
-        .table-card { background: white; padding: 15px; text-align: center; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .card-details { font-size: 0.85rem; margin: 10px 0; min-height: 40px; color: #666; }
-        .controls { display: flex; flex-direction: column; gap: 5px; }
-        .controls button { padding: 8px; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; }
-        .controls button:disabled { opacity: 0.4; cursor: not-allowed; }
-        
-        .btn-set-free { background: #4caf50; }
-        .btn-set-busy { background: #ff5252; }
-        .btn-set-reserve { background: #fbc02d; color: #444 !important; }
-
-        /* Розмітка залів */
-        .row { display: flex; gap: 20px; align-items: center; }
+        /* РОЗМІТКА ЗАЛІВ */
         .hall-1-container { display: flex; gap: 35px; } 
         .main-block { display: flex; flex-direction: column; gap: 20px; }
+        .side-column { display: flex; flex-direction: column; gap: 45px; margin-top: 10px; }
+        .row { display: flex; gap: 20px; align-items: center; }
         .indent-row-1 { margin-left: 95px; }
         .hall-2-grid { display: flex; flex-direction: column; gap: 20px; padding-left: 100px; }
+
+        /* --- ПАНЕЛЬ ОФІЦІАНТА --- */
+        .admin-panel { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
+        .table-card { background: white; padding: 15px; text-align: center; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .card-details { font-size: 0.8rem; margin: 10px 0; min-height: 35px; color: #555; line-height: 1.3; }
+        .controls { display: flex; flex-direction: column; gap: 6px; }
+        .controls button { padding: 8px; border: none; border-radius: 8px; cursor: pointer; color: white; font-weight: bold; font-size: 0.85rem; }
+        .controls button:disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn-set-free { background: #4caf50; }
+        .btn-set-busy { background: #ff5252; }
+        .btn-set-reserve { background: #fbc02d; color: #5d4037 !important; }
     </style>
 </head>
 <body>
@@ -96,25 +96,79 @@
                 <div class="hall-1-container">
                     <div class="main-block">
                         <div class="row indent-row-1">
-                            <div id="table-105" class="table table-vertical"><span>105</span></div>
-                            <div id="table-104" class="table table-vertical"><span>104</span></div>
-                            <div id="table-103" class="table table-vertical"><span>103</span></div>
+                            <div id="table-105" class="table table-vertical">105</div>
+                            <div id="table-104" class="table table-vertical">104</div>
+                            <div id="table-103" class="table table-vertical">103</div>
                         </div>
                         <div class="row">
-                            <div id="table-106" class="table table-horizontal"><span>106</span></div>
-                            <div id="table-107" class="table table-horizontal"><span>107</span></div>
-                            <div id="table-108" class="table table-horizontal"><span>108</span></div>
-                            <div id="table-109" class="table table-horizontal"><span>109</span></div>
-                            <div id="table-110" class="table table-horizontal"><span>110</span></div>
+                            <div id="table-106" class="table table-horizontal">106</div>
+                            <div id="table-107" class="table table-horizontal">107</div>
+                            <div id="table-108" class="table table-horizontal">108</div>
+                            <div id="table-109" class="table table-horizontal">109</div>
+                            <div id="table-110" class="table table-horizontal">110</div>
                         </div>
+                        <div class="row">
+                            <div id="table-114" class="table table-horizontal">114</div>
+                            <div id="table-113" class="table table-horizontal">113</div>
+                            <div id="table-112" class="table table-horizontal">112</div>
+                            <div id="table-111" class="table table-horizontal">111</div>
+                        </div>
+                    </div>
+                    <div class="side-column">
+                        <div id="table-102" class="table table-horizontal">102</div>
+                        <div id="table-101" class="table table-horizontal">101</div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 40px;">
+                    <div id="table-115" class="table table-vertical">115</div>
+                    <div id="table-116" class="table table-vertical">116</div>
+                    <div id="table-117" class="table table-vertical">117</div>
+                    <div id="table-118" class="table table-vertical">118</div>
+                    <div id="table-119" class="table table-vertical">119</div>
+                    <div id="table-120" class="table table-vertical">120</div>
+                </div>
+            </div>
+
+            <div class="hall-area">
+                <div class="hall-title">Зал 2</div>
+                <div class="hall-2-grid">
+                    <div class="row" style="justify-content: center; margin-bottom: 30px;">
+                        <div id="table-216" class="table table-vertical">216</div>
+                        <div id="table-215" class="table table-vertical">215</div>
+                        <div id="table-214" class="table table-vertical">214</div>
+                        <div id="table-213" class="table table-vertical">213</div>
+                    </div>
+                    <div class="row" style="align-items: flex-start;">
+                        <div style="display:flex; flex-direction:column; gap:20px; margin-right: 40px;">
+                            <div class="row">
+                                <div id="table-209" class="table table-horizontal">209</div>
+                                <div id="table-210" class="table table-horizontal">210</div>
+                                <div id="table-211" class="table table-horizontal">211</div>
+                            </div>
+                            <div class="row">
+                                <div id="table-208" class="table table-horizontal">208</div>
+                                <div id="table-207" class="table table-horizontal">207</div>
+                                <div id="table-206" class="table table-horizontal">206</div>
+                            </div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:20px;">
+                            <div id="table-212" class="table table-horizontal">212</div>
+                            <div id="table-205" class="table table-horizontal" style="margin-top: 20px;">205</div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 30px;">
+                        <div id="table-201" class="table table-vertical">201</div>
+                        <div id="table-202" class="table table-vertical">202</div>
+                        <div id="table-203" class="table table-vertical">203</div>
+                        <div id="table-204" class="table table-vertical">204</div>
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
     </div>
 
     <div id="waiter-view" class="hidden">
-        <div id="admin-grid" class="admin-panel">Завантаження...</div>
+        <div id="admin-grid" class="admin-panel">Синхронізація з базою...</div>
     </div>
 
     <script type="module">
@@ -150,7 +204,7 @@
         function resetInactivityTimer() {
             if (auth.currentUser) {
                 clearTimeout(inactivityTimer);
-                inactivityTimer = setTimeout(() => { alert("Сесія завершена"); logout(); }, 5 * 60 * 1000);
+                inactivityTimer = setTimeout(() => { alert("Час сесії вийшов"); logout(); }, 5 * 60 * 1000);
             }
         }
         ['mousedown', 'mousemove', 'keypress'].forEach(evt => window.addEventListener(evt, resetInactivityTimer));
@@ -161,26 +215,23 @@
             document.getElementById('waiter-view').classList.toggle('hidden', !isAuth);
             document.getElementById('auth-btn').classList.toggle('hidden', isAuth);
             document.getElementById('logout-btn').classList.toggle('hidden', !isAuth);
+            document.getElementById('page-title').innerText = isAuth ? "Керування залом" : "Карта вільних місць";
             if(isAuth) resetInactivityTimer();
         });
 
         window.setTableStatus = (id, newStatus, btn) => {
             if (!auth.currentUser) return;
             
-            let updates = { 
-                status: newStatus,
-                lastUpdate: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                guests: "",
-                bookingInfo: ""
-            };
+            let updates = { status: newStatus, lastUpdate: "", guests: "", bookingInfo: "" };
 
             if (newStatus === 'occupied') {
                 const g = prompt("Кількість людей?");
                 if (!g) return;
                 updates.guests = g;
+                updates.lastUpdate = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             } else if (newStatus === 'reserved') {
-                const g = prompt("Кількість людей?");
-                const t = prompt("Дата та час (напр. Сьогодні 19:00)?");
+                const g = prompt("Скільки людей?");
+                const t = prompt("Коли (напр. 19:30)?");
                 if (!g || !t) return;
                 updates.guests = g;
                 updates.bookingInfo = t;
@@ -200,23 +251,25 @@
                 const item = data[id];
                 const status = item.status;
                 
-                // Оновлення клієнтської схеми
+                // Схема залу
                 const el = document.getElementById(`table-${id}`);
                 if (el) {
                     el.className = `table ${el.classList.contains('table-vertical') ? 'table-vertical' : 'table-horizontal'} ${status}`;
-                    const info = status === 'free' ? '' : (status === 'occupied' ? `👥${item.guests}` : `🕒${item.bookingInfo}`);
-                    el.innerHTML = `<span>${id}</span><div class="table-info-label">${info}</div>`;
+                    let label = "";
+                    if(status === 'occupied') label = `👥${item.guests}`;
+                    if(status === 'reserved') label = `🕒${item.bookingInfo}`;
+                    el.innerHTML = `<span>${id}</span><div class="table-info-label">${label}</div>`;
                 }
 
                 // Картка офіціанта
-                let detailText = "Вільний";
-                if(status === 'occupied') detailText = `Зайнято о ${item.lastUpdate}<br>Гостей: ${item.guests}`;
-                if(status === 'reserved') detailText = `Бронь: ${item.bookingInfo}<br>Гостей: ${item.guests}`;
+                let infoText = "Стіл вільний";
+                if(status === 'occupied') infoText = `Зайнято о <b>${item.lastUpdate}</b><br>Людей: <b>${item.guests}</b>`;
+                if(status === 'reserved') infoText = `Бронь на <b>${item.bookingInfo}</b><br>Людей: <b>${item.guests}</b>`;
 
                 grid.innerHTML += `
                     <div class="table-card">
-                        <h3>Стіл ${id}</h3>
-                        <div class="card-details">${detailText}</div>
+                        <h3 style="margin:0">Стіл ${id}</h3>
+                        <div class="card-details">${infoText}</div>
                         <div class="controls">
                             <button class="btn-set-free" ${status === 'free' ? 'disabled' : ''} onclick="setTableStatus('${id}', 'free', this)">Вільний</button>
                             <button class="btn-set-busy" ${status === 'occupied' ? 'disabled' : ''} onclick="setTableStatus('${id}', 'occupied', this)">Зайняти</button>
