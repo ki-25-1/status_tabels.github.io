@@ -16,18 +16,17 @@
         body { font-family: 'Nunito', sans-serif; background-color: var(--paper-bg); margin: 0; padding: 20px; color: #4a3f35; }
         .hidden { display: none !important; }
 
-        /* Шапка */
+        /* Навігація */
         .nav-header { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 30px; }
         .btn-main { background: var(--main-wood); color: white; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: 800; transition: 0.3s; }
-        .user-info { font-weight: bold; color: var(--accent-cherry); margin-right: 20px; }
 
-        /* Кастомні модалки (Центровані) */
+        /* Модальні вікна */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(46, 33, 27, 0.7); backdrop-filter: blur(10px);
             display: flex; justify-content: center; align-items: center; z-index: 3000;
         }
-        .custom-modal { background: white; padding: 30px; border-radius: 25px; width: 100%; max-width: 340px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: emerge 0.3s ease; }
+        .custom-modal { background: white; padding: 30px; border-radius: 25px; width: 340px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: emerge 0.3s ease; }
         @keyframes emerge { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
         input { width: 100%; padding: 12px; border: 2px solid #f0e5d8; border-radius: 12px; font-family: inherit; font-size: 1.1rem; box-sizing: border-box; text-align: center; margin-top: 10px; }
@@ -38,10 +37,7 @@
         .hall-area { display: flex; flex-direction: column; align-items: flex-start; }
         .hall-title { font-size: 1.6rem; color: var(--main-wood); border-bottom: 4px solid var(--accent-cherry); width: 100%; text-align: center; padding-bottom: 10px; margin-bottom: 30px; font-weight: 800; }
 
-        .table {
-            width: 50px; height: 50px; background: #f0e5d8; border: 3px solid #d7ccc8; border-radius: 14px; 
-            display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer; transition: 0.3s;
-        }
+        .table { width: 50px; height: 50px; background: #f0e5d8; border: 3px solid #d7ccc8; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .table-vertical { height: 75px; width: 50px; } .table-horizontal { width: 75px; height: 50px; }
         .free { background: var(--color-free); border-color: var(--border-free); color: var(--text-free); }
         .occupied { background: var(--color-occupied); border-color: var(--border-occupied); color: var(--text-occupied); }
@@ -59,6 +55,7 @@
         .admin-panel { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
         .table-card { background: white; padding: 20px; border-radius: 25px; border: 1px solid #eee; text-align: center; }
         .controls button { width: 100%; padding: 10px; border-radius: 10px; border: none; margin-top: 8px; color: white; font-weight: 800; cursor: pointer; }
+        .updated-by { font-size: 0.7rem; color: #999; margin-top: 10px; font-style: italic; }
     </style>
 </head>
 <body>
@@ -73,9 +70,9 @@
 
     <div id="prompt-modal" class="modal-overlay hidden">
         <div class="custom-modal">
-            <h3 style="margin-top:0; color:var(--main-wood);">Гості</h3>
+            <h3 style="margin-top:0; color:var(--main-wood);">Кількість гостей</h3>
             <p id="prompt-message" style="color:#666; margin-bottom:10px;"></p>
-            <input type="number" id="prompt-input" placeholder="Кількість">
+            <input type="number" id="prompt-input">
             <button class="btn-action" id="prompt-confirm">Підтвердити</button>
             <button style="background:none; border:none; margin-top:10px; cursor:pointer; color:#aaa;" onclick="closePrompt()">Скасувати</button>
         </div>
@@ -97,7 +94,7 @@
             <input type="date" id="book-date">
             <input type="time" id="book-time">
             <button class="btn-action" id="confirm-booking-btn">Забронювати</button>
-            <button style="background:none; border:none; margin-top:15px; cursor:pointer; color:#aaa;" onclick="hideBooking()">Скасувати</button>
+            <button style="background:none; border:none; margin-top:10px; cursor:pointer; color:#aaa;" onclick="hideBooking()">Скасувати</button>
         </div>
     </div>
 
@@ -110,11 +107,11 @@
     </div>
 
     <div class="nav-header">
-        <h1 id="page-title">Схема залів</h1>
+        <h1 id="page-title">Карта залів</h1>
         <div>
-            <span id="user-display" class="user-info hidden" style="margin-right:20px; font-weight:800;"></span>
+            <span id="user-display" class="hidden" style="margin-right:20px; font-weight:800; color:var(--accent-cherry)"></span>
             <button id="auth-btn" class="btn-main" onclick="showLogin()">Вхід для персоналу</button>
-            <button id="logout-btn" class="btn-main hidden" onclick="location.reload()">Вихід</button>
+            <button id="logout-btn" class="btn-main hidden" onclick="logout()">Вихід</button>
         </div>
     </div>
 
@@ -136,60 +133,26 @@
                             <div id="table-109" class="table table-horizontal" onclick="showTableInfo('109')">109</div>
                             <div id="table-110" class="table table-horizontal" onclick="showTableInfo('110')">110</div>
                         </div>
-                        <div class="row">
-                            <div id="table-114" class="table table-horizontal" onclick="showTableInfo('114')">114</div>
-                            <div id="table-113" class="table table-horizontal" onclick="showTableInfo('113')">113</div>
-                            <div id="table-112" class="table table-horizontal" onclick="showTableInfo('112')">112</div>
-                            <div id="table-111" class="table table-horizontal" onclick="showTableInfo('111')">111</div>
-                        </div>
                     </div>
                     <div class="side-column">
                         <div id="table-102" class="table table-horizontal" onclick="showTableInfo('102')">102</div>
                         <div id="table-101" class="table table-horizontal" onclick="showTableInfo('101')">101</div>
                     </div>
                 </div>
-                <div class="row" style="margin-top: 40px;">
-                    <div id="table-115" class="table table-vertical" onclick="showTableInfo('115')">115</div>
-                    <div id="table-116" class="table table-vertical" onclick="showTableInfo('116')">116</div>
-                    <div id="table-117" class="table table-vertical" onclick="showTableInfo('117')">117</div>
-                    <div id="table-118" class="table table-vertical" onclick="showTableInfo('118')">118</div>
-                    <div id="table-119" class="table table-vertical" onclick="showTableInfo('119')">119</div>
-                    <div id="table-120" class="table table-vertical" onclick="showTableInfo('120')">120</div>
-                </div>
             </div>
-
             <div class="hall-area">
                 <div class="hall-title">Зал 2</div>
                 <div class="hall-2-grid">
-                    <div class="row" style="justify-content: center; margin-bottom: 30px;">
+                    <div class="row" style="gap:20px;">
                         <div id="table-216" class="table table-vertical" onclick="showTableInfo('216')">216</div>
                         <div id="table-215" class="table table-vertical" onclick="showTableInfo('215')">215</div>
                         <div id="table-214" class="table table-vertical" onclick="showTableInfo('214')">214</div>
                         <div id="table-213" class="table table-vertical" onclick="showTableInfo('213')">213</div>
                     </div>
-                    <div class="row" style="align-items: flex-start;">
-                        <div style="display:flex; flex-direction:column; gap:20px; margin-right: 40px;">
-                            <div class="row">
-                                <div id="table-209" class="table table-horizontal" onclick="showTableInfo('209')">209</div>
-                                <div id="table-210" class="table table-horizontal" onclick="showTableInfo('210')">210</div>
-                                <div id="table-211" class="table table-horizontal" onclick="showTableInfo('211')">211</div>
-                            </div>
-                            <div class="row">
-                                <div id="table-208" class="table table-horizontal" onclick="showTableInfo('208')">208</div>
-                                <div id="table-207" class="table table-horizontal" onclick="showTableInfo('207')">207</div>
-                                <div id="table-206" class="table table-horizontal" onclick="showTableInfo('206')">206</div>
-                            </div>
-                        </div>
-                        <div style="display:flex; flex-direction:column; gap:20px;">
-                            <div id="table-212" class="table table-horizontal" onclick="showTableInfo('212')">212</div>
-                            <div id="table-205" class="table table-horizontal" onclick="showTableInfo('205')" style="margin-top: 20px;">205</div>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top: 30px;">
+                    <div class="row" style="margin-top:20px; gap:20px;">
                         <div id="table-201" class="table table-vertical" onclick="showTableInfo('201')">201</div>
                         <div id="table-202" class="table table-vertical" onclick="showTableInfo('202')">202</div>
                         <div id="table-203" class="table table-vertical" onclick="showTableInfo('203')">203</div>
-                        <div id="table-204" class="table table-vertical" onclick="showTableInfo('204')">204</div>
                     </div>
                 </div>
             </div>
@@ -218,7 +181,7 @@
         
         let currentUser = null, currentPin = "", currentTablesData = {}, targetTableId = null;
 
-        signInAnonymously(auth).catch(e => console.error("Anonymous auth error"));
+        signInAnonymously(auth).catch(e => console.error("Auth Error"));
 
         // --- ПОВІДОМЛЕННЯ ---
         window.customAlert = (title, msg) => {
@@ -239,9 +202,12 @@
         };
         window.closePrompt = () => document.getElementById('prompt-modal').classList.add('hidden');
 
-        // --- ВХІД ---
+        // --- ВХІД / ВИХІД ---
         window.showLogin = () => document.getElementById('login-modal').classList.remove('hidden');
-        window.hideLogin = () => document.getElementById('login-modal').classList.add('hidden');
+        window.hideLogin = () => {
+            document.getElementById('login-modal').classList.add('hidden');
+            document.getElementById('pass-input').value = ""; // Очищення при скасуванні
+        };
         
         window.tryLogin = async () => {
             const pass = document.getElementById('pass-input').value;
@@ -249,7 +215,7 @@
             
             if (snapshot.exists()) {
                 currentUser = snapshot.val(); 
-                currentPin = String(pass);
+                currentPin = String(pass); // ПІН як текст
                 
                 const ud = document.getElementById('user-display');
                 ud.innerText = `Працює: ${currentUser.name}`;
@@ -260,19 +226,28 @@
                 document.getElementById('logout-btn').classList.remove('hidden');
                 document.getElementById('client-view').classList.add('hidden');
                 document.getElementById('waiter-view').classList.remove('hidden');
+                
+                document.getElementById('pass-input').value = ""; // Очищення після входу
             } else {
                 customAlert("Помилка", "Невірний ПІН!");
             }
         };
 
+        window.logout = () => {
+            currentUser = null;
+            currentPin = "";
+            document.getElementById('pass-input').value = "";
+            location.reload(); 
+        };
+
         // --- ЗБЕРЕЖЕННЯ ---
         window.setTableStatus = (id, status) => {
             if (status === 'reserved') {
-                if (currentUser.role !== 'admin') return customAlert("Обмеження", "Лише адмін може бронювати!");
+                if (currentUser.role !== 'admin') return customAlert("Обмеження", "Тільки адмін може бронювати!");
                 targetTableId = id; document.getElementById('booking-modal').classList.remove('hidden'); return;
             }
             if (status === 'occupied') {
-                customPrompt("Скільки гостей завітало?", (g) => saveStatus(id, status, g));
+                customPrompt("Скільки гостей?", (g) => saveStatus(id, status, g));
             } else { saveStatus(id, status, ""); }
         };
 
@@ -325,6 +300,7 @@
                             <button style="background:#ff5252" onclick="setTableStatus('${id}','occupied')">Зайняти</button>
                             <button style="background:#fbc02d; color:#333" onclick="setTableStatus('${id}','reserved')">Бронь</button>
                         </div>
+                        <div class="updated-by">${item.updatedBy ? 'Змінив: ' + item.updatedBy : ''}</div>
                     </div>`;
             });
         });
