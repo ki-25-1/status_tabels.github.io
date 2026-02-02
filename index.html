@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кав'ярня - Pro Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-free: #e8f5e9; --border-free: #81c784; --text-free: #1b5e20;
+            --color-occupied: #ffebee; --border-occupied: #e57373; --text-occupied: #c62828;
+            --color-reserved: #fffde7; --border-reserved: #fbc02d; --text-reserved: #f57f17;
+            --main-brown: #8d6e63;
+        }
+
+        body { font-family: 'Nunito', sans-serif; background-color: #fffcf5; margin: 0; padding: 20px; color: #4a3f35; }
+        .hidden { display: none !important; }
+
+        /* Навігація */
+        .nav-header { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 30px; }
+        .btn-admin { background: var(--main-brown); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+        /* Модальне вікно входу */
+        #login-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background: white; padding: 30px; border-radius: 15px; width: 300px; text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .modal-content input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+        .btn-login { background: #4caf50; color: white; border: none; width: 100%; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        /* Схема залу (ваші стилі збережено) */
+        .restaurant-layout { display: flex; justify-content: center; gap: 100px; flex-wrap: wrap; }
+        .table {
+            width: 50px; height: 50px; background: #f0e5d8; border: 3px solid #d7ccc8; border-radius: 12px; 
+            display: flex; align-items: center; justify-content: center; font-weight: 800; transition: all 0.4s ease;
+        }
+        .table-vertical { height: 75px; width: 50px; }
+        .table-horizontal { width: 75px; height: 50px; }
+        .free { background-color: var(--color-free); border-color: var(--border-free); color: var(--text-free); }
+        .occupied { background-color: var(--color-occupied); border-color: var(--border-occupied); color: var(--text-occupied); }
+        .reserved { background-color: var(--color-reserved); border-color: var(--border-reserved); color: var(--text-reserved); }
+
+        /* Панель офіціанта */
+        .admin-panel { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
+        .table-card { background: white; padding: 15px; text-align: center; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .controls { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+        .controls button { padding: 8px; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; }
+        .btn-set-free { background: #4caf50; }
+        .btn-set-busy { background: #ff5252; }
+        .btn-set-reserve { background: #fbc02d; color: #444 !important; }
+    </style>
+</head>
+<body>
+
+    <div id="login-modal" class="hidden">
+        <div class="modal-content">
+            <h3>Вхід для персоналу</h3>
+            <input type="email" id="email" placeholder="Email (напр. waiter@cafe.com)">
+            <input type="password" id="password" placeholder="Пароль">
+            <button class="btn-login" onclick="login()">Увійти</button>
+            <button style="background:none; border:none; margin-top:10px; cursor:pointer; color:gray;" onclick="hideLogin()">Скасувати</button>
+        </div>
+    </div>
+
+    <div class="nav-header">
+        <h1 id="page-title">Карта вільних місць</h1>
+        <button id="auth-btn" class="btn-admin" onclick="showLogin()">Вхід для персоналу</button>
+        <button id="logout-btn" class="btn-admin hidden" onclick="logout()">Вийти</button>
+    </div>
+
+    <div id="client-view">
+        <div class="restaurant-layout">
+            <div class="hall-area">
+                <div id="table-101" class="table table-horizontal">101</div>
+                </div>
+        </div>
+    </div>
+
+    <div id="waiter-view" class="hidden">
+        <div id="admin-grid" class="admin-panel">Завантаження...</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const _k = ["AIzaSyBX", "AC29hMS3fBNE", "vbxG2CDY9NSmw", "ML4GqY"];
+        const firebaseConfig = {
+            apiKey: _k.join(''),
+            authDomain: "status-tabels.firebaseapp.com",
+            databaseURL: "https://status-tabels-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "status-tabels",
+            storageBucket: "status-tabels.firebasestorage.app",
+            messagingSenderId: "867731562454",
+            appId: "1:867731562454:web:1077b014fec33180838e77"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        let inactivityTimer;
+
+        // --- ФУНКЦІЇ АВТОРИЗАЦІЇ ---
+        window.showLogin = () => document.getElementById('login-modal').classList.remove('hidden');
+        window.hideLogin = () => document.getElementById('login-modal').classList.add('hidden');
+
+        window.login = () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            signInWithEmailAndPassword(auth, email, pass)
+                .then(() => { hideLogin(); resetInactivityTimer(); })
+                .catch(err => alert("Помилка: " + err.message));
+        };
+
+        window.logout = () => {
+            signOut(auth);
+            location.reload(); // Перезавантаження для повної безпеки
+        };
+
+        // --- ТАЙМЕР НЕАКТИВНОСТІ (5 хвилин) ---
+        function resetInactivityTimer() {
+            if (auth.currentUser) {
+                clearTimeout(inactivityTimer);
+                inactivityTimer = setTimeout(() => {
+                    alert("Сесія завершена через неактивність.");
+                    logout();
+                }, 5 * 60 * 1000); // 5 хвилин
+            }
+        }
+
+        // Відстеження дій користувача
+        ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
+            window.addEventListener(evt, resetInactivityTimer);
+        });
+
+        // Стежимо за станом входу
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('client-view').classList.add('hidden');
+                document.getElementById('waiter-view').classList.remove('hidden');
+                document.getElementById('auth-btn').classList.add('hidden');
+                document.getElementById('logout-btn').classList.remove('hidden');
+                document.getElementById('page-title').innerText = "Панель Офіціанта (Активна)";
+            } else {
+                document.getElementById('client-view').classList.remove('hidden');
+                document.getElementById('waiter-view').classList.add('hidden');
+                document.getElementById('auth-btn').classList.remove('hidden');
+                document.getElementById('logout-btn').classList.add('hidden');
+                document.getElementById('page-title').innerText = "Карта вільних місць";
+            }
+        });
+
+        // --- РОБОТА З БАЗОЮ ---
+        window.setTableStatus = (id, newStatus) => {
+            if (!auth.currentUser) return alert("Потрібна авторизація!");
+            update(ref(db, `tables/${id}`), { status: newStatus });
+        };
+
+        onValue(ref(db, 'tables'), (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
+            const grid = document.getElementById('admin-grid');
+            grid.innerHTML = '';
+
+            Object.keys(data).sort().forEach(id => {
+                const status = data[id].status;
+                
+                // Оновлення схеми
+                const el = document.getElementById(`table-${id}`);
+                if (el) {
+                    el.className = `table ${el.classList.contains('table-vertical') ? 'table-vertical' : 'table-horizontal'} ${status}`;
+                }
+
+                // Картки для офіціанта
+                grid.innerHTML += `
+                    <div class="table-card">
+                        <h3>Стіл ${id}</h3>
+                        <div class="controls">
+                            <button class="btn-set-free" onclick="setTableStatus('${id}', 'free')">Вільний</button>
+                            <button class="btn-set-busy" onclick="setTableStatus('${id}', 'occupied')">Зайняти</button>
+                            <button class="btn-set-reserve" onclick="setTableStatus('${id}', 'reserved')">Бронь</button>
+                        </div>
+                    </div>`;
+            });
+        });
+    </script>
+</body>
+</html>
