@@ -50,25 +50,18 @@
         .table-vertical { height: 80px; width: 60px; } 
         .table-horizontal { width: 80px; height: 60px; }
 
-        /* Статуси столів */
         .free { background: var(--color-free); border-color: var(--border-free); color: var(--text-free); }
         .occupied { background: var(--color-occupied); border-color: var(--border-occupied); color: var(--text-occupied); }
         .reserved { background: var(--color-reserved); border-color: var(--border-reserved); color: var(--text-reserved); }
 
-        /* Адмінка */
         .admin-panel { 
             display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; 
             max-width: 1000px; margin: 0 auto; padding-top: 20px; border-top: 2px dashed #ccc; 
         }
         .table-card { background: white; padding: 15px; border-radius: 15px; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .status-badge { display: inline-block; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px;}
-
-        /* Індикатор замовлення */
-        .order-indicator {
-            position: absolute; top: -5px; right: -5px; width: 15px; height: 15px; background: blue; border-radius: 50%; border: 2px solid white; display: none;
-        }
+        .order-indicator { position: absolute; top: -5px; right: -5px; width: 15px; height: 15px; background: blue; border-radius: 50%; border: 2px solid white; display: none; }
         .has-order .order-indicator { display: block; }
-
     </style>
 </head>
 <body>
@@ -76,7 +69,7 @@
     <div id="login-modal" class="modal-overlay hidden">
         <div class="custom-modal">
             <h2>🔐 Вхід адміна</h2>
-            <input type="password" id="pass-input" placeholder="Введіть пароль (1234)">
+            <input type="password" id="pass-input" placeholder="Введіть пароль">
             <button class="btn-action" onclick="app.login()">Увійти</button>
             <button class="btn-action" style="background:#aaa" onclick="app.toggleModal('login-modal')">Скасувати</button>
         </div>
@@ -93,7 +86,6 @@
             <textarea id="book-bar" placeholder="Напої..."></textarea>
             <label style="font-size:0.9rem; font-weight:bold; display:block; text-align:left;">🍳 Кухня:</label>
             <textarea id="book-kitchen" placeholder="Страви..."></textarea>
-            
             <button class="btn-action" onclick="app.saveBooking()">Зберегти</button>
             <button class="btn-action" style="background:#aaa" onclick="app.toggleModal('booking-modal')">Закрити</button>
         </div>
@@ -140,7 +132,6 @@
                 <div id="t-105" class="table table-vertical" onclick="app.tableClick('105')">105 <div class="order-indicator"></div></div>
             </div>
         </div>
-
         <div class="hall-area">
             <div class="hall-title">Зал 2</div>
             <div class="row">
@@ -154,33 +145,50 @@
         </div>
     </div>
 
-    <div id="admin-panel" class="admin-panel hidden">
-        </div>
+    <div id="admin-panel" class="admin-panel hidden"></div>
 
     <script>
-        // === ЛОГІКА ПРОГРАМИ ===
         const app = {
             isAdmin: false,
-            adminPass: "1234", // Пароль за замовчуванням
+            // 🔒 ТУТ ЗАШИФРОВАНИЙ ПАРОЛЬ "1234" (Це число 1509442)
+            // Якщо хочете змінити, дивіться інструкцію внизу коду
+            adminHash: 1509442, 
+            
             selectedTable: null,
-            data: {}, // Тут живуть дані столів
+            data: {},
 
-            // 1. Ініціалізація
+            // Функція хешування (перетворює текст в число)
+            hashPassword: function(str) {
+                var hash = 0;
+                if (str.length == 0) return hash;
+                for (var i = 0; i < str.length; i++) {
+                    var char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // Convert to 32bit integer
+                }
+                return hash;
+            },
+
             init: function() {
-                // Завантажуємо дані з пам'яті браузера або створюємо нові
                 const stored = localStorage.getItem('restaurantTables');
                 if (stored) {
                     this.data = JSON.parse(stored);
                 } else {
-                    // Якщо пусто - ініціалізуємо всі столи як 'free'
                     ['101','102','103','104','105','201','202','203','204'].forEach(id => {
                         this.data[id] = { status: 'free', guests: '', time: '', bar: '', kitchen: '' };
                     });
                 }
                 this.render();
+                
+                // Для зручності: в консолі можна згенерувати новий хеш
+                console.log("Щоб змінити пароль, введіть у консолі: app.generateNewHash('ваш_новий_пароль')");
             },
 
-            // 2. Збереження і Перемальовка
+            generateNewHash: function(newPass) {
+                console.log(`Ваш новий adminHash: ${this.hashPassword(newPass)}`);
+                alert(`Скопіюйте це число і вставте в код замість старого adminHash: ${this.hashPassword(newPass)}`);
+            },
+
             save: function() {
                 localStorage.setItem('restaurantTables', JSON.stringify(this.data));
                 this.render();
@@ -188,24 +196,14 @@
 
             render: function() {
                 const adminGrid = document.getElementById('admin-panel');
-                adminGrid.innerHTML = ''; // Чистимо адмінку
-
-                // Проходимо по всіх столах
+                adminGrid.innerHTML = '';
                 for (const [id, info] of Object.entries(this.data)) {
                     const el = document.getElementById(`t-${id}`);
                     if (!el) continue;
-
-                    // Оновлення кольору на схемі
                     el.className = `table ${el.classList.contains('table-vertical') ? 'table-vertical' : 'table-horizontal'} ${info.status}`;
-                    
-                    // Індикатор замовлення (синя крапка)
-                    if (info.bar || info.kitchen) {
-                        el.classList.add('has-order');
-                    } else {
-                        el.classList.remove('has-order');
-                    }
+                    if (info.bar || info.kitchen) el.classList.add('has-order');
+                    else el.classList.remove('has-order');
 
-                    // Якщо Адмін - малюємо картки керування
                     if (this.isAdmin) {
                         let statusText = info.status === 'free' ? 'Вільний' : (info.status === 'occupied' ? `👥 ${info.guests} ос.` : `🕒 ${info.time}`);
                         let cardHtml = `
@@ -227,15 +225,13 @@
             },
 
             getColor: function(status) {
-                if(status === 'free') return '#4caf50'; // Зелений
-                if(status === 'occupied') return '#ef5350'; // Червоний
-                return '#ffca28'; // Жовтий
+                if(status === 'free') return '#4caf50';
+                if(status === 'occupied') return '#ef5350';
+                return '#ffca28';
             },
 
-            // 3. Взаємодія (Кліки)
             tableClick: function(id) {
                 const info = this.data[id];
-                // Клієнт бачить просто інфо
                 let msg = `Стіл №${id}\nСтатус: ${info.status}`;
                 if(info.guests) msg += `\nГостей: ${info.guests}`;
                 if(info.time) msg += `\nЧас: ${info.time}`;
@@ -247,45 +243,41 @@
             action: function(id, type) {
                 this.selectedTable = id;
                 if (type === 'free') {
-                    if (this.data[id].status === 'free') return; // Вже вільний
+                    if (this.data[id].status === 'free') return;
                     document.getElementById('confirm-pass').value = '';
                     this.toggleModal('confirm-modal');
                 } else if (type === 'occupy') {
                     document.getElementById('occupy-guests').value = '';
                     this.toggleModal('occupy-modal');
                 } else if (type === 'book' || type === 'edit') {
-                    // Заповнюємо поля, якщо редагуємо
                     const t = this.data[id];
                     document.getElementById('book-guests').value = t.guests;
                     document.getElementById('book-bar').value = t.bar;
                     document.getElementById('book-kitchen').value = t.kitchen;
-                    // Дату/час важче розпарсити назад в input type=date, тому просто лишаємо пустим для нового вводу або ручного
                     this.toggleModal('booking-modal');
                 }
             },
 
-            // 4. Логіка кнопок у модалках
             login: function() {
                 const p = document.getElementById('pass-input').value;
-                if (p === this.adminPass) {
+                // Порівнюємо ХЕШ введеного паролю з ХЕШЕМ в коді
+                if (this.hashPassword(p) === this.adminHash) {
                     this.isAdmin = true;
                     document.getElementById('user-status').innerText = "Адміністратор";
                     document.getElementById('login-btn').classList.add('hidden');
                     document.getElementById('logout-btn').classList.remove('hidden');
                     document.getElementById('admin-panel').classList.remove('hidden');
                     this.toggleModal('login-modal');
-                    this.render(); // Перемалювати, щоб з'явились картки
+                    this.render();
                 } else {
-                    alert("Невірний пароль! (Спробуй 1234)");
+                    alert("Невірний пароль!");
                 }
             },
 
             saveOccupied: function() {
                 const g = document.getElementById('occupy-guests').value;
                 if(!g) return alert("Вкажіть гостей!");
-                this.data[this.selectedTable] = { 
-                    status: 'occupied', guests: g, time: new Date().toLocaleTimeString(), bar: '', kitchen: '' 
-                };
+                this.data[this.selectedTable] = { status: 'occupied', guests: g, time: new Date().toLocaleTimeString(), bar: '', kitchen: '' };
                 this.save();
                 this.toggleModal('occupy-modal');
             },
@@ -296,24 +288,16 @@
                 const t = document.getElementById('book-time').value;
                 const bar = document.getElementById('book-bar').value;
                 const kit = document.getElementById('book-kitchen').value;
-
                 if (!g) return alert("Вкажіть кількість людей!");
-                
-                // Зберігаємо
-                this.data[this.selectedTable] = {
-                    status: 'reserved',
-                    guests: g,
-                    time: `${d} о ${t}`,
-                    bar: bar,
-                    kitchen: kit
-                };
+                this.data[this.selectedTable] = { status: 'reserved', guests: g, time: `${d} о ${t}`, bar: bar, kitchen: kit };
                 this.save();
                 this.toggleModal('booking-modal');
             },
 
             confirmFree: function() {
                 const p = document.getElementById('confirm-pass').value;
-                if (p === this.adminPass) {
+                // Тут теж перевіряємо хеш
+                if (this.hashPassword(p) === this.adminHash) {
                     this.data[this.selectedTable] = { status: 'free', guests: '', time: '', bar: '', kitchen: '' };
                     this.save();
                     this.toggleModal('confirm-modal');
@@ -329,7 +313,6 @@
             }
         };
 
-        // Запуск
         app.init();
     </script>
 </body>
