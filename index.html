@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ресторан — Керування</title>
+    <title>Ресторан — Система керування</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -19,250 +19,318 @@
         /* Модальні вікна */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(46, 33, 27, 0.8); backdrop-filter: blur(10px);
+            background: rgba(46, 33, 27, 0.8); backdrop-filter: blur(5px);
             display: flex; justify-content: center; align-items: center; z-index: 5000;
         }
         .custom-modal { 
-            background: white; padding: 25px; border-radius: 30px; width: 90%; max-width: 380px; 
-            max-height: 90vh; overflow-y: auto; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.4); 
+            background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; 
+            max-height: 90vh; overflow-y: auto; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.3); 
         }
 
-        .btn-action { background: var(--accent-cherry); color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 10px; transition: 0.2s; }
-        .btn-main { background: var(--main-wood); color: white; border: none; padding: 10px 25px; border-radius: 12px; cursor: pointer; font-weight: 800; }
+        .btn-action { background: var(--accent-cherry); color: white; border: none; width: 100%; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 10px; font-size: 1rem; }
+        .btn-action:hover { opacity: 0.9; }
+        .btn-main { background: var(--main-wood); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 800; }
         
-        input, textarea { width: 100%; padding: 12px; border: 2px solid #f0e5d8; border-radius: 12px; font-family: inherit; box-sizing: border-box; margin-top: 8px; }
-        textarea { height: 70px; resize: none; }
+        input, textarea { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-family: inherit; box-sizing: border-box; margin-top: 8px; font-size: 1rem; }
+        textarea { height: 60px; resize: none; }
 
         /* Схема залів */
-        .nav-header { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 30px; }
+        .nav-header { display: flex; justify-content: space-between; align-items: center; max-width: 1000px; margin: 0 auto 30px; }
         .restaurant-layout { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-bottom: 50px; }
-        .hall-area { display: flex; flex-direction: column; align-items: center; }
-        .hall-title { font-size: 1.4rem; color: var(--main-wood); border-bottom: 3px solid var(--accent-cherry); width: 100%; text-align: center; padding-bottom: 5px; margin-bottom: 20px; font-weight: 800; }
+        .hall-area { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.5); padding: 20px; border-radius: 20px; }
+        .hall-title { font-size: 1.4rem; color: var(--main-wood); border-bottom: 3px solid var(--accent-cherry); margin-bottom: 20px; font-weight: 800; }
+
+        .row { display: flex; gap: 15px; margin-bottom: 15px; }
 
         .table { 
-            width: 50px; height: 50px; background: #f0e5d8; border: 3px solid #d7ccc8; border-radius: 12px; 
-            display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer; transition: 0.3s; 
+            width: 60px; height: 60px; background: #fff; border: 3px solid #ccc; border-radius: 12px; 
+            display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer; transition: 0.2s; position: relative;
         }
-        .table-vertical { height: 70px; width: 50px; } 
-        .table-horizontal { width: 70px; height: 50px; }
-        .row { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+        .table:hover { transform: scale(1.05); }
+        .table-vertical { height: 80px; width: 60px; } 
+        .table-horizontal { width: 80px; height: 60px; }
 
+        /* Статуси столів */
         .free { background: var(--color-free); border-color: var(--border-free); color: var(--text-free); }
         .occupied { background: var(--color-occupied); border-color: var(--border-occupied); color: var(--text-occupied); }
         .reserved { background: var(--color-reserved); border-color: var(--border-reserved); color: var(--text-reserved); }
 
-        /* Картки адмінки */
-        .admin-panel { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; border-top: 2px dashed #ccc; padding-top: 30px; }
-        .table-card { background: white; padding: 15px; border-radius: 20px; border: 1px solid #ddd; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        /* Адмінка */
+        .admin-panel { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; 
+            max-width: 1000px; margin: 0 auto; padding-top: 20px; border-top: 2px dashed #ccc; 
+        }
+        .table-card { background: white; padding: 15px; border-radius: 15px; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .status-badge { display: inline-block; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px;}
+
+        /* Індикатор замовлення */
+        .order-indicator {
+            position: absolute; top: -5px; right: -5px; width: 15px; height: 15px; background: blue; border-radius: 50%; border: 2px solid white; display: none;
+        }
+        .has-order .order-indicator { display: block; }
+
     </style>
 </head>
 <body>
 
     <div id="login-modal" class="modal-overlay hidden">
         <div class="custom-modal">
-            <h2>Вхід персоналу</h2>
-            <input type="email" id="email-input" placeholder="Email">
-            <input type="password" id="pass-input" placeholder="Пароль">
-            <button class="btn-action" onclick="tryLogin()">Увійти</button>
-            <button class="btn-action" style="background:none; color:#aaa;" onclick="hideLogin()">Скасувати</button>
+            <h2>🔐 Вхід адміна</h2>
+            <input type="password" id="pass-input" placeholder="Введіть пароль (1234)">
+            <button class="btn-action" onclick="app.login()">Увійти</button>
+            <button class="btn-action" style="background:#aaa" onclick="app.toggleModal('login-modal')">Скасувати</button>
         </div>
     </div>
 
     <div id="booking-modal" class="modal-overlay hidden">
         <div class="custom-modal">
-            <h3>Деталі броні</h3>
-            <input type="number" id="book-guests" placeholder="Кількість людей">
+            <h3>📝 Бронювання / Редагування</h3>
+            <input type="number" id="book-guests" placeholder="Кількість гостей">
             <input type="date" id="book-date">
             <input type="time" id="book-time">
-            <textarea id="preorder-bar" placeholder="🍸 Предзамовлення БАР"></textarea>
-            <textarea id="preorder-kitchen" placeholder="🍳 Предзамовлення КУХНЯ"></textarea>
-            <button class="btn-action" id="confirm-booking-btn">Зберегти</button>
-            <button class="btn-action" style="background:#aaa" onclick="hideBooking()">Закрити</button>
+            <hr style="margin: 15px 0; border: 0; border-top: 1px dashed #ccc;">
+            <label style="font-size:0.9rem; font-weight:bold; display:block; text-align:left;">🍸 Бар:</label>
+            <textarea id="book-bar" placeholder="Напої..."></textarea>
+            <label style="font-size:0.9rem; font-weight:bold; display:block; text-align:left;">🍳 Кухня:</label>
+            <textarea id="book-kitchen" placeholder="Страви..."></textarea>
+            
+            <button class="btn-action" onclick="app.saveBooking()">Зберегти</button>
+            <button class="btn-action" style="background:#aaa" onclick="app.toggleModal('booking-modal')">Закрити</button>
         </div>
     </div>
 
     <div id="occupy-modal" class="modal-overlay hidden">
         <div class="custom-modal">
-            <h3>Посадка гостей</h3>
-            <input type="number" id="occupy-guests" placeholder="Кількість гостей">
-            <button class="btn-action" id="confirm-occupy-btn">Зайняти стіл</button>
-            <button class="btn-action" style="background:#aaa" onclick="hideOccupy()">Скасувати</button>
+            <h3>👥 Посадка гостей</h3>
+            <input type="number" id="occupy-guests" placeholder="Скільки людей?">
+            <button class="btn-action" onclick="app.saveOccupied()">Зайняти стіл</button>
+            <button class="btn-action" style="background:#aaa" onclick="app.toggleModal('occupy-modal')">Скасувати</button>
         </div>
     </div>
 
-    <div id="admin-confirm-modal" class="modal-overlay hidden">
+    <div id="confirm-modal" class="modal-overlay hidden">
         <div class="custom-modal">
-            <h3>Підтвердження</h3>
-            <p>Введіть пароль для звільнення столу:</p>
-            <input type="password" id="admin-pass-confirm" placeholder="Пароль">
-            <button class="btn-action" id="confirm-free-btn">Звільнити</button>
-            <button class="btn-action" style="background:#aaa" onclick="hideAdminConfirm()">Скасувати</button>
+            <h3>⚠️ Увага</h3>
+            <p>Введіть пароль, щоб звільнити стіл:</p>
+            <input type="password" id="confirm-pass" placeholder="Пароль">
+            <button class="btn-action" onclick="app.confirmFree()">Звільнити</button>
+            <button class="btn-action" style="background:#aaa" onclick="app.toggleModal('confirm-modal')">Скасувати</button>
         </div>
     </div>
 
     <div class="nav-header">
-        <h1>Схема залів</h1>
+        <h1>🍽️ Ресторан</h1>
         <div>
-            <span id="user-display" style="margin-right:10px; font-weight:800;"></span>
-            <button id="auth-btn" class="btn-main" onclick="showLogin()">Вхід</button>
+            <span id="user-status" style="margin-right:10px; font-weight:bold; color:var(--accent-cherry)">Гість</span>
+            <button id="login-btn" class="btn-main" onclick="app.toggleModal('login-modal')">Вхід</button>
             <button id="logout-btn" class="btn-main hidden" onclick="location.reload()">Вихід</button>
         </div>
     </div>
 
-    <div id="layout-container" class="restaurant-layout">
+    <div class="restaurant-layout">
         <div class="hall-area">
             <div class="hall-title">Зал 1</div>
             <div class="row">
-                <div id="table-101" class="table table-horizontal" onclick="showInfo('101')">101</div>
-                <div id="table-102" class="table table-horizontal" onclick="showInfo('102')">102</div>
-                <div id="table-103" class="table table-vertical" onclick="showInfo('103')">103</div>
+                <div id="t-101" class="table table-horizontal" onclick="app.tableClick('101')">101 <div class="order-indicator"></div></div>
+                <div id="t-102" class="table table-horizontal" onclick="app.tableClick('102')">102 <div class="order-indicator"></div></div>
             </div>
             <div class="row">
-                <div id="table-104" class="table table-horizontal" onclick="showInfo('104')">104</div>
-                <div id="table-105" class="table table-horizontal" onclick="showInfo('105')">105</div>
+                <div id="t-103" class="table table-vertical" onclick="app.tableClick('103')">103 <div class="order-indicator"></div></div>
+                <div id="t-104" class="table table-vertical" onclick="app.tableClick('104')">104 <div class="order-indicator"></div></div>
+                <div id="t-105" class="table table-vertical" onclick="app.tableClick('105')">105 <div class="order-indicator"></div></div>
             </div>
         </div>
+
         <div class="hall-area">
             <div class="hall-title">Зал 2</div>
             <div class="row">
-                <div id="table-201" class="table table-vertical" onclick="showInfo('201')">201</div>
-                <div id="table-202" class="table table-vertical" onclick="showInfo('202')">202</div>
+                <div id="t-201" class="table table-vertical" onclick="app.tableClick('201')">201 <div class="order-indicator"></div></div>
+                <div id="t-202" class="table table-vertical" onclick="app.tableClick('202')">202 <div class="order-indicator"></div></div>
+            </div>
+            <div class="row">
+                <div id="t-203" class="table table-horizontal" onclick="app.tableClick('203')">203 <div class="order-indicator"></div></div>
+                <div id="t-204" class="table table-horizontal" onclick="app.tableClick('204')">204 <div class="order-indicator"></div></div>
             </div>
         </div>
     </div>
 
-    <div id="admin-view" class="hidden">
-        <h2 style="text-align: center; color: var(--main-wood);">Керування столами</h2>
-        <div id="admin-grid" class="admin-panel"></div>
-    </div>
+    <div id="admin-panel" class="admin-panel hidden">
+        </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    <script>
+        // === ЛОГІКА ПРОГРАМИ ===
+        const app = {
+            isAdmin: false,
+            adminPass: "1234", // Пароль за замовчуванням
+            selectedTable: null,
+            data: {}, // Тут живуть дані столів
 
-        const config = {
-            apiKey: atob("QUl6YVN5QlhBQzI5aE1TM2ZCTkV2YnhHMkNEWTlOU213TUw0R3FZ"),
-            authDomain: "status-tabels.firebaseapp.com",
-            databaseURL: "https://status-tabels-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "status-tabels"
-        };
+            // 1. Ініціалізація
+            init: function() {
+                // Завантажуємо дані з пам'яті браузера або створюємо нові
+                const stored = localStorage.getItem('restaurantTables');
+                if (stored) {
+                    this.data = JSON.parse(stored);
+                } else {
+                    // Якщо пусто - ініціалізуємо всі столи як 'free'
+                    ['101','102','103','104','105','201','202','203','204'].forEach(id => {
+                        this.data[id] = { status: 'free', guests: '', time: '', bar: '', kitchen: '' };
+                    });
+                }
+                this.render();
+            },
 
-        const app = initializeApp(config);
-        const db = getDatabase(app);
-        const auth = getAuth(app);
-        
-        let currentTablesData = {};
-        let targetId = null;
-        let storedPassword = "";
-        let isAdmin = false;
+            // 2. Збереження і Перемальовка
+            save: function() {
+                localStorage.setItem('restaurantTables', JSON.stringify(this.data));
+                this.render();
+            },
 
-        // Авторизація
-        window.showLogin = () => document.getElementById('login-modal').classList.remove('hidden');
-        window.hideLogin = () => document.getElementById('login-modal').classList.add('hidden');
-        window.tryLogin = () => {
-            const e = document.getElementById('email-input').value;
-            const p = document.getElementById('pass-input').value;
-            signInWithEmailAndPassword(auth, e, p).then(() => {
-                storedPassword = p;
-                isAdmin = true;
-                document.getElementById('login-modal').classList.add('hidden');
-                document.getElementById('auth-btn').classList.add('hidden');
-                document.getElementById('logout-btn').classList.remove('hidden');
-                document.getElementById('admin-view').classList.remove('hidden');
-                document.getElementById('user-display').innerText = "Адмін";
-            }).catch(() => alert("Помилка входу!"));
-        };
+            render: function() {
+                const adminGrid = document.getElementById('admin-panel');
+                adminGrid.innerHTML = ''; // Чистимо адмінку
 
-        // Дії зі столами
-        window.setTableStatus = (id, status) => {
-            targetId = id;
-            if (status === 'free') {
-                document.getElementById('admin-pass-confirm').value = "";
-                document.getElementById('admin-confirm-modal').classList.remove('hidden');
-            } else if (status === 'occupied') {
-                document.getElementById('occupy-modal').classList.remove('hidden');
-            } else if (status === 'reserved') {
-                openBooking(id);
+                // Проходимо по всіх столах
+                for (const [id, info] of Object.entries(this.data)) {
+                    const el = document.getElementById(`t-${id}`);
+                    if (!el) continue;
+
+                    // Оновлення кольору на схемі
+                    el.className = `table ${el.classList.contains('table-vertical') ? 'table-vertical' : 'table-horizontal'} ${info.status}`;
+                    
+                    // Індикатор замовлення (синя крапка)
+                    if (info.bar || info.kitchen) {
+                        el.classList.add('has-order');
+                    } else {
+                        el.classList.remove('has-order');
+                    }
+
+                    // Якщо Адмін - малюємо картки керування
+                    if (this.isAdmin) {
+                        let statusText = info.status === 'free' ? 'Вільний' : (info.status === 'occupied' ? `👥 ${info.guests} ос.` : `🕒 ${info.time}`);
+                        let cardHtml = `
+                            <div class="table-card" style="border-left: 5px solid ${this.getColor(info.status)}">
+                                <h3>Стіл ${id}</h3>
+                                <div class="status-badge" style="background:${this.getColor(info.status)}20; color:${this.getColor(info.status)}">${statusText}</div>
+                                ${(info.bar || info.kitchen) ? '<div style="font-size:0.8rem; color:blue;">📝 Є передзамовлення</div>' : ''}
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-top:10px;">
+                                    <button onclick="app.action('${id}', 'occupy')" style="background:#ef5350; color:white; border:none; padding:5px; border-radius:5px;">Зайняти</button>
+                                    <button onclick="app.action('${id}', 'book')" style="background:#ffca28; border:none; padding:5px; border-radius:5px;">Бронь</button>
+                                    <button onclick="app.action('${id}', 'edit')" style="background:#42a5f5; color:white; border:none; padding:5px; border-radius:5px; grid-column: span 2;">📝 Редагувати</button>
+                                    <button onclick="app.action('${id}', 'free')" style="background:#66bb6a; color:white; border:none; padding:5px; border-radius:5px; grid-column: span 2;">🔓 Звільнити</button>
+                                </div>
+                            </div>
+                        `;
+                        adminGrid.innerHTML += cardHtml;
+                    }
+                }
+            },
+
+            getColor: function(status) {
+                if(status === 'free') return '#4caf50'; // Зелений
+                if(status === 'occupied') return '#ef5350'; // Червоний
+                return '#ffca28'; // Жовтий
+            },
+
+            // 3. Взаємодія (Кліки)
+            tableClick: function(id) {
+                const info = this.data[id];
+                // Клієнт бачить просто інфо
+                let msg = `Стіл №${id}\nСтатус: ${info.status}`;
+                if(info.guests) msg += `\nГостей: ${info.guests}`;
+                if(info.time) msg += `\nЧас: ${info.time}`;
+                if(info.bar) msg += `\n🍸 Бар: ${info.bar}`;
+                if(info.kitchen) msg += `\n🍳 Кухня: ${info.kitchen}`;
+                alert(msg);
+            },
+
+            action: function(id, type) {
+                this.selectedTable = id;
+                if (type === 'free') {
+                    if (this.data[id].status === 'free') return; // Вже вільний
+                    document.getElementById('confirm-pass').value = '';
+                    this.toggleModal('confirm-modal');
+                } else if (type === 'occupy') {
+                    document.getElementById('occupy-guests').value = '';
+                    this.toggleModal('occupy-modal');
+                } else if (type === 'book' || type === 'edit') {
+                    // Заповнюємо поля, якщо редагуємо
+                    const t = this.data[id];
+                    document.getElementById('book-guests').value = t.guests;
+                    document.getElementById('book-bar').value = t.bar;
+                    document.getElementById('book-kitchen').value = t.kitchen;
+                    // Дату/час важче розпарсити назад в input type=date, тому просто лишаємо пустим для нового вводу або ручного
+                    this.toggleModal('booking-modal');
+                }
+            },
+
+            // 4. Логіка кнопок у модалках
+            login: function() {
+                const p = document.getElementById('pass-input').value;
+                if (p === this.adminPass) {
+                    this.isAdmin = true;
+                    document.getElementById('user-status').innerText = "Адміністратор";
+                    document.getElementById('login-btn').classList.add('hidden');
+                    document.getElementById('logout-btn').classList.remove('hidden');
+                    document.getElementById('admin-panel').classList.remove('hidden');
+                    this.toggleModal('login-modal');
+                    this.render(); // Перемалювати, щоб з'явились картки
+                } else {
+                    alert("Невірний пароль! (Спробуй 1234)");
+                }
+            },
+
+            saveOccupied: function() {
+                const g = document.getElementById('occupy-guests').value;
+                if(!g) return alert("Вкажіть гостей!");
+                this.data[this.selectedTable] = { 
+                    status: 'occupied', guests: g, time: new Date().toLocaleTimeString(), bar: '', kitchen: '' 
+                };
+                this.save();
+                this.toggleModal('occupy-modal');
+            },
+
+            saveBooking: function() {
+                const g = document.getElementById('book-guests').value;
+                const d = document.getElementById('book-date').value;
+                const t = document.getElementById('book-time').value;
+                const bar = document.getElementById('book-bar').value;
+                const kit = document.getElementById('book-kitchen').value;
+
+                if (!g) return alert("Вкажіть кількість людей!");
+                
+                // Зберігаємо
+                this.data[this.selectedTable] = {
+                    status: 'reserved',
+                    guests: g,
+                    time: `${d} о ${t}`,
+                    bar: bar,
+                    kitchen: kit
+                };
+                this.save();
+                this.toggleModal('booking-modal');
+            },
+
+            confirmFree: function() {
+                const p = document.getElementById('confirm-pass').value;
+                if (p === this.adminPass) {
+                    this.data[this.selectedTable] = { status: 'free', guests: '', time: '', bar: '', kitchen: '' };
+                    this.save();
+                    this.toggleModal('confirm-modal');
+                } else {
+                    alert("Невірний пароль!");
+                }
+            },
+
+            toggleModal: function(id) {
+                const el = document.getElementById(id);
+                if (el.classList.contains('hidden')) el.classList.remove('hidden');
+                else el.classList.add('hidden');
             }
         };
 
-        window.openBooking = (id) => {
-            targetId = id;
-            const t = currentTablesData[id] || {};
-            document.getElementById('book-guests').value = t.guests || "";
-            document.getElementById('preorder-bar').value = t.preorderBar || "";
-            document.getElementById('preorder-kitchen').value = t.preorderKitchen || "";
-            document.getElementById('booking-modal').classList.remove('hidden');
-        };
-
-        document.getElementById('confirm-free-btn').onclick = () => {
-            if(document.getElementById('admin-pass-confirm').value === storedPassword) {
-                save(targetId, 'free', '', '', '', '');
-                document.getElementById('admin-confirm-modal').classList.add('hidden');
-            } else { alert("Невірний пароль!"); }
-        };
-
-        document.getElementById('confirm-booking-btn').onclick = () => {
-            const g = document.getElementById('book-guests').value;
-            const d = document.getElementById('book-date').value;
-            const t = document.getElementById('book-time').value;
-            const pb = document.getElementById('preorder-bar').value;
-            const pk = document.getElementById('preorder-kitchen').value;
-            save(targetId, 'reserved', g, `${d} ${t}`, pb, pk);
-            document.getElementById('booking-modal').classList.add('hidden');
-        };
-
-        document.getElementById('confirm-occupy-btn').onclick = () => {
-            save(targetId, 'occupied', document.getElementById('occupy-guests').value);
-            document.getElementById('occupy-modal').classList.add('hidden');
-        };
-
-        window.hideBooking = () => document.getElementById('booking-modal').classList.add('hidden');
-        window.hideOccupy = () => document.getElementById('occupy-modal').classList.add('hidden');
-        window.hideAdminConfirm = () => document.getElementById('admin-confirm-modal').classList.add('hidden');
-
-        function save(id, status, guests, booking = "", bar = "", kitchen = "") {
-            update(ref(db, `tables/${id}`), {
-                status, guests, bookingInfo: booking, preorderBar: bar, preorderKitchen: kitchen
-            });
-        }
-
-        // Відображення інфо для клієнта (простий клік)
-        window.showInfo = (id) => {
-            const t = currentTablesData[id];
-            if(!t) return;
-            alert(`Стіл №${id}\nСтатус: ${t.status}\nГостей: ${t.guests || 0}\nБронь: ${t.bookingInfo || 'немає'}`);
-        };
-
-        // Синхронізація в реальному часі
-        onValue(ref(db, 'tables'), (snap) => {
-            const data = snap.val() || {};
-            currentTablesData = data;
-            const grid = document.getElementById('admin-grid');
-            grid.innerHTML = '';
-
-            // Оновлюємо візуальну схему та створюємо адмін-картки
-            Object.keys(data).forEach(id => {
-                const item = data[id];
-                const tableEl = document.getElementById(`table-${id}`);
-                if(tableEl) {
-                    tableEl.className = `table ${tableEl.classList.contains('table-vertical')?'table-vertical':'table-horizontal'} ${item.status}`;
-                }
-
-                if(isAdmin) {
-                    grid.innerHTML += `
-                        <div class="table-card">
-                            <h3>Стіл ${id}</h3>
-                            <p>${item.status === 'free' ? 'Вільний' : item.bookingInfo || 'Зайнятий'}</p>
-                            <button onclick="setTableStatus('${id}','occupied')" style="background:#4caf50; color:white; border:none; padding:5px; border-radius:5px; margin:2px; cursor:pointer;">Зайняти</button>
-                            <button onclick="setTableStatus('${id}','reserved')" style="background:#fbc02d; border:none; padding:5px; border-radius:5px; margin:2px; cursor:pointer;">Бронь</button>
-                            <button onclick="openBooking('${id}')" style="background:#2196f3; color:white; border:none; padding:5px; border-radius:5px; margin:2px; cursor:pointer;">📝</button>
-                            <button onclick="setTableStatus('${id}','free')" style="background:#ff5252; color:white; border:none; padding:5px; border-radius:5px; margin:2px; cursor:pointer;">Звільнити</button>
-                        </div>`;
-                }
-            });
-        });
+        // Запуск
+        app.init();
     </script>
 </body>
 </html>
