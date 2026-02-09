@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ресторан — Система керування</title>
+    <title>Ресторан — Повна версія</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -35,20 +35,20 @@
         textarea { height: 60px; resize: none; }
 
         /* Схема залів */
-        .nav-header { display: flex; justify-content: space-between; align-items: center; max-width: 1000px; margin: 0 auto 30px; }
-        .restaurant-layout { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-bottom: 50px; }
+        .nav-header { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 30px; }
+        .restaurant-layout { display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; margin-bottom: 50px; }
         .hall-area { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.5); padding: 20px; border-radius: 20px; }
-        .hall-title { font-size: 1.4rem; color: var(--main-wood); border-bottom: 3px solid var(--accent-cherry); margin-bottom: 20px; font-weight: 800; }
+        .hall-title { font-size: 1.6rem; color: var(--main-wood); border-bottom: 3px solid var(--accent-cherry); margin-bottom: 20px; font-weight: 800; }
 
-        .row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; justify-content: center; }
 
         .table { 
-            width: 60px; height: 60px; background: #fff; border: 3px solid #ccc; border-radius: 12px; 
-            display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer; transition: 0.2s; position: relative;
+            width: 55px; height: 55px; background: #fff; border: 3px solid #ccc; border-radius: 12px; 
+            display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer; transition: 0.2s; position: relative; font-size: 0.9rem;
         }
-        .table:hover { transform: scale(1.05); }
-        .table-vertical { height: 80px; width: 60px; } 
-        .table-horizontal { width: 80px; height: 60px; }
+        .table:hover { transform: scale(1.1); z-index: 10; }
+        .table-vertical { height: 80px; width: 55px; } 
+        .table-horizontal { width: 80px; height: 55px; }
 
         .free { background: var(--color-free); border-color: var(--border-free); color: var(--text-free); }
         .occupied { background: var(--color-occupied); border-color: var(--border-occupied); color: var(--text-occupied); }
@@ -56,7 +56,7 @@
 
         .admin-panel { 
             display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; 
-            max-width: 1000px; margin: 0 auto; padding-top: 20px; border-top: 2px dashed #ccc; 
+            max-width: 1200px; margin: 0 auto; padding-top: 20px; border-top: 2px dashed #ccc; 
         }
         .table-card { background: white; padding: 15px; border-radius: 15px; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .status-badge { display: inline-block; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px;}
@@ -75,17 +75,25 @@
         </div>
     </div>
 
+    <div id="security-modal" class="modal-overlay hidden">
+        <div class="custom-modal">
+            <h3>🔒 Дія вимагає паролю</h3>
+            <p id="security-text">Щоб змінити статус цього столу, введіть пароль:</p>
+            <input type="password" id="security-pass" placeholder="Пароль">
+            <button class="btn-action" onclick="app.confirmSecurityAction()">Підтвердити</button>
+            <button class="btn-action" style="background:#aaa" onclick="app.toggleModal('security-modal')">Скасувати</button>
+        </div>
+    </div>
+
     <div id="booking-modal" class="modal-overlay hidden">
         <div class="custom-modal">
-            <h3>📝 Бронювання / Редагування</h3>
+            <h3>📝 Бронювання</h3>
             <input type="number" id="book-guests" placeholder="Кількість гостей">
             <input type="date" id="book-date">
             <input type="time" id="book-time">
             <hr style="margin: 15px 0; border: 0; border-top: 1px dashed #ccc;">
-            <label style="font-size:0.9rem; font-weight:bold; display:block; text-align:left;">🍸 Бар:</label>
-            <textarea id="book-bar" placeholder="Напої..."></textarea>
-            <label style="font-size:0.9rem; font-weight:bold; display:block; text-align:left;">🍳 Кухня:</label>
-            <textarea id="book-kitchen" placeholder="Страви..."></textarea>
+            <textarea id="book-bar" placeholder="🍸 Бар..."></textarea>
+            <textarea id="book-kitchen" placeholder="🍳 Кухня..."></textarea>
             <button class="btn-action" onclick="app.saveBooking()">Зберегти</button>
             <button class="btn-action" style="background:#aaa" onclick="app.toggleModal('booking-modal')">Закрити</button>
         </div>
@@ -100,18 +108,8 @@
         </div>
     </div>
 
-    <div id="confirm-modal" class="modal-overlay hidden">
-        <div class="custom-modal">
-            <h3>⚠️ Увага</h3>
-            <p>Введіть пароль, щоб звільнити стіл:</p>
-            <input type="password" id="confirm-pass" placeholder="Пароль">
-            <button class="btn-action" onclick="app.confirmFree()">Звільнити</button>
-            <button class="btn-action" style="background:#aaa" onclick="app.toggleModal('confirm-modal')">Скасувати</button>
-        </div>
-    </div>
-
     <div class="nav-header">
-        <h1>🍽️ Ресторан</h1>
+        <h1>🍽️ План залів</h1>
         <div>
             <span id="user-status" style="margin-right:10px; font-weight:bold; color:var(--accent-cherry)">Гість</span>
             <button id="login-btn" class="btn-main" onclick="app.toggleModal('login-modal')">Вхід</button>
@@ -122,25 +120,73 @@
     <div class="restaurant-layout">
         <div class="hall-area">
             <div class="hall-title">Зал 1</div>
-            <div class="row">
-                <div id="t-101" class="table table-horizontal" onclick="app.tableClick('101')">101 <div class="order-indicator"></div></div>
-                <div id="t-102" class="table table-horizontal" onclick="app.tableClick('102')">102 <div class="order-indicator"></div></div>
+            <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content: center;">
+                <div>
+                    <div class="row">
+                        <div id="t-105" class="table table-vertical" onclick="app.tableClick('105')">105<div class="order-indicator"></div></div>
+                        <div id="t-104" class="table table-vertical" onclick="app.tableClick('104')">104<div class="order-indicator"></div></div>
+                        <div id="t-103" class="table table-vertical" onclick="app.tableClick('103')">103<div class="order-indicator"></div></div>
+                    </div>
+                    <div class="row">
+                        <div id="t-106" class="table table-horizontal" onclick="app.tableClick('106')">106<div class="order-indicator"></div></div>
+                        <div id="t-107" class="table table-horizontal" onclick="app.tableClick('107')">107<div class="order-indicator"></div></div>
+                        <div id="t-108" class="table table-horizontal" onclick="app.tableClick('108')">108<div class="order-indicator"></div></div>
+                        <div id="t-109" class="table table-horizontal" onclick="app.tableClick('109')">109<div class="order-indicator"></div></div>
+                        <div id="t-110" class="table table-horizontal" onclick="app.tableClick('110')">110<div class="order-indicator"></div></div>
+                    </div>
+                    <div class="row">
+                        <div id="t-114" class="table table-horizontal" onclick="app.tableClick('114')">114<div class="order-indicator"></div></div>
+                        <div id="t-113" class="table table-horizontal" onclick="app.tableClick('113')">113<div class="order-indicator"></div></div>
+                        <div id="t-112" class="table table-horizontal" onclick="app.tableClick('112')">112<div class="order-indicator"></div></div>
+                        <div id="t-111" class="table table-horizontal" onclick="app.tableClick('111')">111<div class="order-indicator"></div></div>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div id="t-102" class="table table-horizontal" onclick="app.tableClick('102')">102<div class="order-indicator"></div></div>
+                    <div id="t-101" class="table table-horizontal" onclick="app.tableClick('101')">101<div class="order-indicator"></div></div>
+                </div>
             </div>
-            <div class="row">
-                <div id="t-103" class="table table-vertical" onclick="app.tableClick('103')">103 <div class="order-indicator"></div></div>
-                <div id="t-104" class="table table-vertical" onclick="app.tableClick('104')">104 <div class="order-indicator"></div></div>
-                <div id="t-105" class="table table-vertical" onclick="app.tableClick('105')">105 <div class="order-indicator"></div></div>
+            <div class="row" style="margin-top:20px;">
+                <div id="t-115" class="table table-vertical" onclick="app.tableClick('115')">115<div class="order-indicator"></div></div>
+                <div id="t-116" class="table table-vertical" onclick="app.tableClick('116')">116<div class="order-indicator"></div></div>
+                <div id="t-117" class="table table-vertical" onclick="app.tableClick('117')">117<div class="order-indicator"></div></div>
+                <div id="t-118" class="table table-vertical" onclick="app.tableClick('118')">118<div class="order-indicator"></div></div>
+                <div id="t-119" class="table table-vertical" onclick="app.tableClick('119')">119<div class="order-indicator"></div></div>
+                <div id="t-120" class="table table-vertical" onclick="app.tableClick('120')">120<div class="order-indicator"></div></div>
             </div>
         </div>
+
         <div class="hall-area">
             <div class="hall-title">Зал 2</div>
             <div class="row">
-                <div id="t-201" class="table table-vertical" onclick="app.tableClick('201')">201 <div class="order-indicator"></div></div>
-                <div id="t-202" class="table table-vertical" onclick="app.tableClick('202')">202 <div class="order-indicator"></div></div>
+                <div id="t-216" class="table table-vertical" onclick="app.tableClick('216')">216<div class="order-indicator"></div></div>
+                <div id="t-215" class="table table-vertical" onclick="app.tableClick('215')">215<div class="order-indicator"></div></div>
+                <div id="t-214" class="table table-vertical" onclick="app.tableClick('214')">214<div class="order-indicator"></div></div>
+                <div id="t-213" class="table table-vertical" onclick="app.tableClick('213')">213<div class="order-indicator"></div></div>
             </div>
-            <div class="row">
-                <div id="t-203" class="table table-horizontal" onclick="app.tableClick('203')">203 <div class="order-indicator"></div></div>
-                <div id="t-204" class="table table-horizontal" onclick="app.tableClick('204')">204 <div class="order-indicator"></div></div>
+            <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content: center;">
+                <div>
+                    <div class="row">
+                        <div id="t-209" class="table table-horizontal" onclick="app.tableClick('209')">209<div class="order-indicator"></div></div>
+                        <div id="t-210" class="table table-horizontal" onclick="app.tableClick('210')">210<div class="order-indicator"></div></div>
+                        <div id="t-211" class="table table-horizontal" onclick="app.tableClick('211')">211<div class="order-indicator"></div></div>
+                    </div>
+                    <div class="row">
+                        <div id="t-208" class="table table-horizontal" onclick="app.tableClick('208')">208<div class="order-indicator"></div></div>
+                        <div id="t-207" class="table table-horizontal" onclick="app.tableClick('207')">207<div class="order-indicator"></div></div>
+                        <div id="t-206" class="table table-horizontal" onclick="app.tableClick('206')">206<div class="order-indicator"></div></div>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div id="t-212" class="table table-horizontal" onclick="app.tableClick('212')">212<div class="order-indicator"></div></div>
+                    <div id="t-205" class="table table-horizontal" onclick="app.tableClick('205')">205<div class="order-indicator"></div></div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div id="t-201" class="table table-vertical" onclick="app.tableClick('201')">201<div class="order-indicator"></div></div>
+                <div id="t-202" class="table table-vertical" onclick="app.tableClick('202')">202<div class="order-indicator"></div></div>
+                <div id="t-203" class="table table-vertical" onclick="app.tableClick('203')">203<div class="order-indicator"></div></div>
+                <div id="t-204" class="table table-vertical" onclick="app.tableClick('204')">204<div class="order-indicator"></div></div>
             </div>
         </div>
     </div>
@@ -150,21 +196,19 @@
     <script>
         const app = {
             isAdmin: false,
-            // 🔒 ТУТ ЗАШИФРОВАНИЙ ПАРОЛЬ "1234" (Це число 1509442)
-            // Якщо хочете змінити, дивіться інструкцію внизу коду
-            adminHash: 1509442, 
+            adminHash: 1509442, // Пароль "1234"
             
             selectedTable: null,
+            pendingAction: null, // Для збереження дії після вводу паролю
             data: {},
 
-            // Функція хешування (перетворює текст в число)
             hashPassword: function(str) {
                 var hash = 0;
                 if (str.length == 0) return hash;
                 for (var i = 0; i < str.length; i++) {
                     var char = str.charCodeAt(i);
                     hash = ((hash << 5) - hash) + char;
-                    hash = hash & hash; // Convert to 32bit integer
+                    hash = hash & hash;
                 }
                 return hash;
             },
@@ -174,19 +218,16 @@
                 if (stored) {
                     this.data = JSON.parse(stored);
                 } else {
-                    ['101','102','103','104','105','201','202','203','204'].forEach(id => {
+                    // Ініціалізуємо ВСІ столи
+                    const ids = [];
+                    for(let i=101; i<=120; i++) ids.push(i.toString());
+                    for(let i=201; i<=216; i++) ids.push(i.toString());
+                    
+                    ids.forEach(id => {
                         this.data[id] = { status: 'free', guests: '', time: '', bar: '', kitchen: '' };
                     });
                 }
                 this.render();
-                
-                // Для зручності: в консолі можна згенерувати новий хеш
-                console.log("Щоб змінити пароль, введіть у консолі: app.generateNewHash('ваш_новий_пароль')");
-            },
-
-            generateNewHash: function(newPass) {
-                console.log(`Ваш новий adminHash: ${this.hashPassword(newPass)}`);
-                alert(`Скопіюйте це число і вставте в код замість старого adminHash: ${this.hashPassword(newPass)}`);
             },
 
             save: function() {
@@ -197,9 +238,15 @@
             render: function() {
                 const adminGrid = document.getElementById('admin-panel');
                 adminGrid.innerHTML = '';
-                for (const [id, info] of Object.entries(this.data)) {
+                
+                // Сортуємо ключі для красивого відображення
+                const sortedIds = Object.keys(this.data).sort();
+
+                for (const id of sortedIds) {
+                    const info = this.data[id];
                     const el = document.getElementById(`t-${id}`);
-                    if (!el) continue;
+                    if (!el) continue; // Пропускаємо, якщо столу немає в HTML (на всякий випадок)
+
                     el.className = `table ${el.classList.contains('table-vertical') ? 'table-vertical' : 'table-horizontal'} ${info.status}`;
                     if (info.bar || info.kitchen) el.classList.add('has-order');
                     else el.classList.remove('has-order');
@@ -232,7 +279,7 @@
 
             tableClick: function(id) {
                 const info = this.data[id];
-                let msg = `Стіл №${id}\nСтатус: ${info.status}`;
+                let msg = `Стіл №${id}\nСтатус: ${info.status === 'free' ? 'Вільний' : (info.status === 'reserved' ? 'Бронь' : 'Зайнятий')}`;
                 if(info.guests) msg += `\nГостей: ${info.guests}`;
                 if(info.time) msg += `\nЧас: ${info.time}`;
                 if(info.bar) msg += `\n🍸 Бар: ${info.bar}`;
@@ -240,16 +287,44 @@
                 alert(msg);
             },
 
+            // === ГОЛОВНА ЛОГІКА ДІЙ ===
             action: function(id, type) {
                 this.selectedTable = id;
+                const currentStatus = this.data[id].status;
+
+                // 1. ЗВІЛЬНЕННЯ СТОЛУ
                 if (type === 'free') {
-                    if (this.data[id].status === 'free') return;
-                    document.getElementById('confirm-pass').value = '';
-                    this.toggleModal('confirm-modal');
-                } else if (type === 'occupy') {
-                    document.getElementById('occupy-guests').value = '';
-                    this.toggleModal('occupy-modal');
-                } else if (type === 'book' || type === 'edit') {
+                    if (currentStatus === 'free') return; // Вже вільний
+
+                    // Якщо стіл ЗАЙНЯТИЙ - пароль НЕ потрібен
+                    if (currentStatus === 'occupied') {
+                         this.makeFree();
+                    } 
+                    // Якщо стіл ЗАБРОНЬОВАНИЙ - пароль потрібен (щоб не злетіла бронь випадково)
+                    else if (currentStatus === 'reserved') {
+                        this.pendingAction = () => this.makeFree();
+                        document.getElementById('security-pass').value = '';
+                        this.toggleModal('security-modal');
+                    }
+                } 
+                // 2. ПОСАДКА ГОСТЕЙ (ЗАЙНЯТИ)
+                else if (type === 'occupy') {
+                    // Якщо стіл ЗАБРОНЬОВАНИЙ - пароль ПОТРІБЕН
+                    if (currentStatus === 'reserved') {
+                        this.pendingAction = () => {
+                            document.getElementById('occupy-guests').value = '';
+                            this.toggleModal('occupy-modal');
+                        };
+                        document.getElementById('security-pass').value = '';
+                        this.toggleModal('security-modal');
+                    } else {
+                        // Якщо вільний або вже зайнятий (редагування) - без паролю
+                        document.getElementById('occupy-guests').value = '';
+                        this.toggleModal('occupy-modal');
+                    }
+                } 
+                // 3. БРОНЮВАННЯ ТА РЕДАГУВАННЯ
+                else if (type === 'book' || type === 'edit') {
                     const t = this.data[id];
                     document.getElementById('book-guests').value = t.guests;
                     document.getElementById('book-bar').value = t.bar;
@@ -258,9 +333,27 @@
                 }
             },
 
+            // Допоміжна функція звільнення
+            makeFree: function() {
+                this.data[this.selectedTable] = { status: 'free', guests: '', time: '', bar: '', kitchen: '' };
+                this.save();
+            },
+
+            // Перевірка паролю для захищених дій
+            confirmSecurityAction: function() {
+                const p = document.getElementById('security-pass').value;
+                if (this.hashPassword(p) === this.adminHash) {
+                    this.toggleModal('security-modal');
+                    if (this.pendingAction) this.pendingAction();
+                    this.pendingAction = null;
+                } else {
+                    alert("Невірний пароль!");
+                }
+            },
+
+            // Логін в адмінку
             login: function() {
                 const p = document.getElementById('pass-input').value;
-                // Порівнюємо ХЕШ введеного паролю з ХЕШЕМ в коді
                 if (this.hashPassword(p) === this.adminHash) {
                     this.isAdmin = true;
                     document.getElementById('user-status').innerText = "Адміністратор";
@@ -292,18 +385,6 @@
                 this.data[this.selectedTable] = { status: 'reserved', guests: g, time: `${d} о ${t}`, bar: bar, kitchen: kit };
                 this.save();
                 this.toggleModal('booking-modal');
-            },
-
-            confirmFree: function() {
-                const p = document.getElementById('confirm-pass').value;
-                // Тут теж перевіряємо хеш
-                if (this.hashPassword(p) === this.adminHash) {
-                    this.data[this.selectedTable] = { status: 'free', guests: '', time: '', bar: '', kitchen: '' };
-                    this.save();
-                    this.toggleModal('confirm-modal');
-                } else {
-                    alert("Невірний пароль!");
-                }
             },
 
             toggleModal: function(id) {
