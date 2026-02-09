@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ресторан — Система керування</title>
+    <title>Ресторан — Адмін-система</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -16,181 +16,83 @@
         body { font-family: 'Nunito', sans-serif; background-color: var(--paper-bg); margin: 0; padding: 20px; color: #4a3f35; }
         .hidden { display: none !important; }
 
-        /* Центровані модальні вікна */
+        /* Модальні вікна */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(46, 33, 27, 0.8); backdrop-filter: blur(10px);
             display: flex; justify-content: center; align-items: center; z-index: 4000;
         }
         .custom-modal { 
-            background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 340px; 
-            text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.4); 
-            animation: emerge 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: white; padding: 25px; border-radius: 30px; width: 90%; max-width: 380px; 
+            max-height: 90vh; overflow-y: auto; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.4); 
         }
-        @keyframes emerge { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        .btn-action { background: var(--accent-cherry); color: white; border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: 800; cursor: pointer; margin-top: 15px; font-size: 1.1rem; transition: 0.2s; }
-        .btn-action:hover { transform: scale(1.02); background: #961616; }
+        .btn-action { background: var(--accent-cherry); color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 10px; transition: 0.2s; }
         .btn-main { background: var(--main-wood); color: white; border: none; padding: 10px 25px; border-radius: 12px; cursor: pointer; font-weight: 800; }
-        input { width: 100%; padding: 12px; border: 2px solid #f0e5d8; border-radius: 12px; font-family: inherit; font-size: 1.1rem; box-sizing: border-box; text-align: center; margin-top: 10px; }
-
-        /* Схема залів */
-        .nav-header { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 30px; }
-        .restaurant-layout { display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; margin-top: 20px; }
-        .hall-area { display: flex; flex-direction: column; align-items: center; }
-        .hall-title { font-size: 1.6rem; color: var(--main-wood); border-bottom: 4px solid var(--accent-cherry); width: 100%; text-align: center; padding-bottom: 10px; margin-bottom: 30px; font-weight: 800; }
-
-        .table { 
-            width: 55px; height: 55px; background: #f0e5d8; border: 3px solid #d7ccc8; border-radius: 15px; 
-            display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer; transition: 0.3s; 
-        }
-        .table:hover { transform: scale(1.1); z-index: 10; }
-        .table-vertical { height: 80px; width: 55px; } .table-horizontal { width: 80px; height: 55px; }
         
-        .free { background: var(--color-free); border-color: var(--border-free); color: var(--text-free); }
-        .occupied { background: var(--color-occupied); border-color: var(--border-occupied); color: var(--text-occupied); }
-        .reserved { background: var(--color-reserved); border-color: var(--border-reserved); color: var(--text-reserved); }
+        input, textarea { width: 100%; padding: 12px; border: 2px solid #f0e5d8; border-radius: 12px; font-family: inherit; box-sizing: border-box; margin-top: 8px; }
+        textarea { height: 70px; resize: none; }
 
-        .row { display: flex; gap: 15px; align-items: center; margin-bottom: 15px; }
+        /* Схема та Картки */
+        .nav-header { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 20px; }
+        .admin-panel { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
+        .table-card { background: white; padding: 15px; border-radius: 20px; border: 2px solid #eee; text-align: center; }
+        .card-reserved { border-color: var(--border-reserved); background: #fffdf0; }
+        .card-occupied { border-color: var(--border-occupied); background: #fffafa; }
 
-        /* Адмінка */
-        .admin-panel { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .table-card { background: white; padding: 20px; border-radius: 25px; border: 1px solid #eee; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
-        .controls button { width: 100%; padding: 10px; border: none; border-radius: 10px; margin-top: 8px; color: white; font-weight: 800; cursor: pointer; }
+        .table { width: 50px; height: 50px; background: #eee; border: 2px solid #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer; }
+        .free { background: var(--color-free); border-color: var(--border-free); }
+        .occupied { background: var(--color-occupied); border-color: var(--border-occupied); }
+        .reserved { background: var(--color-reserved); border-color: var(--border-reserved); }
     </style>
 </head>
 <body>
 
-    <div id="alert-modal" class="modal-overlay hidden">
-        <div class="custom-modal">
-            <h3 id="alert-title" style="margin-top:0; color:var(--main-wood);"></h3>
-            <p id="alert-message" style="color:#666;"></p>
-            <button class="btn-action" onclick="closeAlert()">Зрозуміло</button>
-        </div>
-    </div>
-
     <div id="login-modal" class="modal-overlay hidden">
         <div class="custom-modal">
-            <h2 style="margin-top:0;">Вхід персоналу</h2>
-            <input type="email" id="email-input" placeholder="Електронна пошта">
-            <input type="password" id="pass-input" placeholder="Логін/Пароль">
+            <h2>Вхід персоналу</h2>
+            <input type="email" id="email-input" placeholder="Email">
+            <input type="password" id="pass-input" placeholder="Пароль">
             <button class="btn-action" onclick="tryLogin()">Увійти</button>
-            <button style="border:none; background:none; margin-top:15px; cursor:pointer; color:#aaa;" onclick="hideLogin()">Скасувати</button>
-        </div>
-    </div>
-
-    <div id="occupy-modal" class="modal-overlay hidden">
-        <div class="custom-modal">
-            <h3 id="occupy-title" style="margin-top:0;">Посадка гостей</h3>
-            <p style="color:#666;">Скільки гостей завітало?</p>
-            <input type="number" id="occupy-guests" placeholder="Напр. 4" min="1">
-            <button class="btn-action" id="confirm-occupy-btn">Зайняти стіл</button>
-            <button style="border:none; background:none; margin-top:15px; cursor:pointer; color:#aaa;" onclick="hideOccupy()">Скасувати</button>
         </div>
     </div>
 
     <div id="booking-modal" class="modal-overlay hidden">
         <div class="custom-modal">
-            <h3>Деталі броні</h3>
+            <h3 id="booking-modal-title">Деталі броні</h3>
             <input type="number" id="book-guests" placeholder="Кількість людей">
             <input type="date" id="book-date">
             <input type="time" id="book-time">
-            <button class="btn-action" id="confirm-booking-btn">Забронювати</button>
-            <button style="border:none; background:none; margin-top:15px; cursor:pointer; color:#aaa;" onclick="hideBooking()">Скасувати</button>
+            <textarea id="preorder-bar" placeholder="🍸 Бар (попереднє замовлення)"></textarea>
+            <textarea id="preorder-kitchen" placeholder="🍳 Кухня (попереднє замовлення)"></textarea>
+            <button class="btn-action" id="confirm-booking-btn">Зберегти</button>
+            <button class="btn-action" style="background:#aaa" onclick="hideBooking()">Скасувати</button>
         </div>
     </div>
 
-    <div id="info-modal" class="modal-overlay hidden" onclick="hideInfo()">
-        <div class="custom-modal" onclick="event.stopPropagation()">
-            <h2 id="modal-table-id" style="margin:0; color:var(--main-wood)">Стіл</h2>
-            <div id="modal-details" style="text-align: left; margin: 25px 0; line-height: 1.6;"></div>
-            <button class="btn-action" style="background:var(--main-wood)" onclick="hideInfo()">Закрити</button>
+    <div id="occupy-modal" class="modal-overlay hidden">
+        <div class="custom-modal">
+            <h3 id="occupy-title">Посадка</h3>
+            <input type="number" id="occupy-guests" placeholder="Скільки гостей?">
+            <button class="btn-action" id="confirm-occupy-btn">Зайняти</button>
+            <button class="btn-action" style="background:#aaa" onclick="hideOccupy()">Скасувати</button>
+        </div>
+    </div>
+
+    <div id="admin-confirm-modal" class="modal-overlay hidden">
+        <div class="custom-modal">
+            <h3>Підтвердження</h3>
+            <p>Введіть пароль адміністратора, щоб звільнити стіл:</p>
+            <input type="password" id="admin-pass-confirm" placeholder="Пароль">
+            <button class="btn-action" id="confirm-free-btn">Звільнити стіл</button>
+            <button class="btn-action" style="background:#aaa" onclick="hideAdminConfirm()">Скасувати</button>
         </div>
     </div>
 
     <div class="nav-header">
-        <h1>Схема залів</h1>
-        <div>
-            <span id="user-display" style="margin-right:15px; font-weight:800; color:var(--accent-cherry)"></span>
-            <button id="auth-btn" class="btn-main" onclick="showLogin()">Вхід</button>
-            <button id="logout-btn" class="btn-main hidden" onclick="location.reload()">Вихід</button>
-        </div>
-    </div>
-
-    <div id="client-view">
-        <div class="restaurant-layout">
-            <div class="hall-area">
-                <div class="hall-title">Зал 1</div>
-                <div style="display:flex; gap:35px;">
-                    <div>
-                        <div class="row" style="margin-left:95px;">
-                            <div id="table-105" class="table table-vertical" onclick="showTableInfo('105')">105</div>
-                            <div id="table-104" class="table table-vertical" onclick="showTableInfo('104')">104</div>
-                            <div id="table-103" class="table table-vertical" onclick="showTableInfo('103')">103</div>
-                        </div>
-                        <div class="row">
-                            <div id="table-106" class="table table-horizontal" onclick="showTableInfo('106')">106</div>
-                            <div id="table-107" class="table table-horizontal" onclick="showTableInfo('107')">107</div>
-                            <div id="table-108" class="table table-horizontal" onclick="showTableInfo('108')">108</div>
-                            <div id="table-109" class="table table-horizontal" onclick="showTableInfo('109')">109</div>
-                            <div id="table-110" class="table table-horizontal" onclick="showTableInfo('110')">110</div>
-                        </div>
-                        <div class="row">
-                            <div id="table-114" class="table table-horizontal" onclick="showTableInfo('114')">114</div>
-                            <div id="table-113" class="table table-horizontal" onclick="showTableInfo('113')">113</div>
-                            <div id="table-112" class="table table-horizontal" onclick="showTableInfo('112')">112</div>
-                            <div id="table-111" class="table table-horizontal" onclick="showTableInfo('111')">111</div>
-                        </div>
-                    </div>
-                    <div style="display:flex; flex-direction:column; gap:45px; margin-top:10px;">
-                        <div id="table-102" class="table table-horizontal" onclick="showTableInfo('102')">102</div>
-                        <div id="table-101" class="table table-horizontal" onclick="showTableInfo('101')">101</div>
-                    </div>
-                </div>
-                <div class="row" style="margin-top:40px;">
-                    <div id="table-115" class="table table-vertical" onclick="showTableInfo('115')">115</div>
-                    <div id="table-116" class="table table-vertical" onclick="showTableInfo('116')">116</div>
-                    <div id="table-117" class="table table-vertical" onclick="showTableInfo('117')">117</div>
-                    <div id="table-118" class="table table-vertical" onclick="showTableInfo('118')">118</div>
-                    <div id="table-119" class="table table-vertical" onclick="showTableInfo('119')">119</div>
-                    <div id="table-120" class="table table-vertical" onclick="showTableInfo('120')">120</div>
-                </div>
-            </div>
-
-            <div class="hall-area">
-                <div class="hall-title">Зал 2</div>
-                <div class="row" style="margin-bottom:40px;">
-                    <div id="table-216" class="table table-vertical" onclick="showTableInfo('216')">216</div>
-                    <div id="table-215" class="table table-vertical" onclick="showTableInfo('215')">215</div>
-                    <div id="table-214" class="table table-vertical" onclick="showTableInfo('214')">214</div>
-                    <div id="table-213" class="table table-vertical" onclick="showTableInfo('213')">213</div>
-                </div>
-                <div style="display:flex; gap: 50px;">
-                    <div>
-                        <div class="row">
-                            <div id="table-209" class="table table-horizontal" onclick="showTableInfo('209')">209</div>
-                            <div id="table-210" class="table table-horizontal" onclick="showTableInfo('210')">210</div>
-                            <div id="table-211" class="table table-horizontal" onclick="showTableInfo('211')">211</div>
-                        </div>
-                        <div class="row">
-                            <div id="table-208" class="table table-horizontal" onclick="showTableInfo('208')">208</div>
-                            <div id="table-207" class="table table-horizontal" onclick="showTableInfo('207')">207</div>
-                            <div id="table-206" class="table table-horizontal" onclick="showTableInfo('206')">206</div>
-                        </div>
-                    </div>
-                    <div style="display:flex; flex-direction:column; gap:20px;">
-                        <div id="table-212" class="table table-horizontal" onclick="showTableInfo('212')">212</div>
-                        <div id="table-205" class="table table-horizontal" onclick="showTableInfo('205')">205</div>
-                    </div>
-                </div>
-                <div class="row" style="margin-top: 40px;">
-                    <div id="table-201" class="table table-vertical" onclick="showTableInfo('201')">201</div>
-                    <div id="table-202" class="table table-vertical" onclick="showTableInfo('202')">202</div>
-                    <div id="table-203" class="table table-vertical" onclick="showTableInfo('203')">203</div>
-                    <div id="table-204" class="table table-vertical" onclick="showTableInfo('204')">204</div>
-                </div>
-            </div>
-        </div>
+        <h1>Система залів</h1>
+        <button id="auth-btn" class="btn-main" onclick="showLogin()">Вхід</button>
+        <button id="logout-btn" class="btn-main hidden" onclick="location.reload()">Вихід</button>
     </div>
 
     <div id="waiter-view" class="hidden"><div id="admin-grid" class="admin-panel"></div></div>
@@ -212,98 +114,114 @@
         const auth = getAuth(app);
         let currentTablesData = {};
         let targetId = null;
+        let storedPassword = ""; // Зберігаємо пароль для перевірки
 
-        // ПОВІДОМЛЕННЯ
-        window.customAlert = (title, msg) => {
-            document.getElementById('alert-title').innerText = title;
-            document.getElementById('alert-message').innerText = msg;
-            document.getElementById('alert-modal').classList.remove('hidden');
-        };
-        window.closeAlert = () => document.getElementById('alert-modal').classList.add('hidden');
-
-        // ВХІД
+        // Логіка входу
         window.showLogin = () => document.getElementById('login-modal').classList.remove('hidden');
-        window.hideLogin = () => document.getElementById('login-modal').classList.add('hidden');
         window.tryLogin = () => {
             const e = document.getElementById('email-input').value;
             const p = document.getElementById('pass-input').value;
             signInWithEmailAndPassword(auth, e, p).then(() => {
+                storedPassword = p; // Запам'ятовуємо пароль для підтверджень
                 document.getElementById('login-modal').classList.add('hidden');
                 document.getElementById('auth-btn').classList.add('hidden');
                 document.getElementById('logout-btn').classList.remove('hidden');
-                document.getElementById('client-view').classList.add('hidden');
                 document.getElementById('waiter-view').classList.remove('hidden');
-                document.getElementById('user-display').innerText = "Адміністратор";
-            }).catch(() => customAlert("Помилка", "Невірні дані для входу!"));
+            }).catch(() => alert("Помилка входу!"));
         };
 
-        // ІНФОРМАЦІЯ ПРО СТІЛ
-        window.showTableInfo = (id) => {
-            const t = currentTablesData[id]; if(!t) return;
-            document.getElementById('modal-table-id').innerText = `Стіл №${id}`;
-            let h = `<b>Статус:</b> ${t.status === 'free' ? 'Вільний' : t.status === 'occupied' ? 'Зайнятий' : 'Бронь'}<br>`;
-            if (t.guests) h += `👥 <b>Кількість осіб:</b> ${t.guests}<br>`;
-            if (t.bookingInfo) h += `🕒 <b>Час броні:</b> ${t.bookingInfo}<br>`;
-            if (t.status === 'occupied') h += `📅 <b>Посадка о:</b> ${t.lastUpdate || '-'}<br>`;
-            document.getElementById('modal-details').innerHTML = h;
-            document.getElementById('info-modal').classList.remove('hidden');
-        };
-        window.hideInfo = () => document.getElementById('info-modal').classList.add('hidden');
-
-        // КЕРУВАННЯ
+        // Керування статусами
         window.setTableStatus = (id, status) => {
             targetId = id;
-            if (status === 'reserved') {
-                document.getElementById('book-date').valueAsDate = new Date();
-                document.getElementById('booking-modal').classList.remove('hidden');
+            if (status === 'free') {
+                // Якщо стіл вже вільний, нічого не робимо
+                if (currentTablesData[id].status === 'free') return;
+                // Якщо стіл зайнятий/бронь — питаємо пароль
+                document.getElementById('admin-pass-confirm').value = "";
+                document.getElementById('admin-confirm-modal').classList.remove('hidden');
+            } else if (status === 'reserved') {
+                openBookingModal(id);
             } else if (status === 'occupied') {
-                document.getElementById('occupy-title').innerText = `Стіл №${id}`;
-                document.getElementById('occupy-guests').value = "";
                 document.getElementById('occupy-modal').classList.remove('hidden');
-            } else { save(id, status, ""); }
+            }
         };
 
-        // ПІДТВЕРДЖЕННЯ ПОСАДКИ (ЗАЙНЯТИ)
-        document.getElementById('confirm-occupy-btn').onclick = () => {
-            const guests = document.getElementById('occupy-guests').value;
-            if(!guests) return customAlert("Увага", "Вкажіть кількість гостей!");
-            save(targetId, 'occupied', guests);
-            document.getElementById('occupy-modal').classList.add('hidden');
+        // Функція для відкриття модалки броні (нова або редагування)
+        window.openBookingModal = (id) => {
+            targetId = id;
+            const t = currentTablesData[id];
+            document.getElementById('booking-modal-title').innerText = `Стіл №${id}`;
+            
+            // Якщо це редагування існуючої броні, підставляємо дані
+            if (t.status === 'reserved') {
+                document.getElementById('book-guests').value = t.guests || "";
+                document.getElementById('preorder-bar').value = t.preorderBar || "";
+                document.getElementById('preorder-kitchen').value = t.preorderKitchen || "";
+                // Дата/час розбиваються з рядка (якщо формат дозволяє)
+            } else {
+                document.getElementById('book-guests').value = "";
+                document.getElementById('preorder-bar').value = "";
+                document.getElementById('preorder-kitchen').value = "";
+                document.getElementById('book-date').valueAsDate = new Date();
+            }
+            document.getElementById('booking-modal').classList.remove('hidden');
         };
-        window.hideOccupy = () => document.getElementById('occupy-modal').classList.add('hidden');
 
-        // ПІДТВЕРДЖЕННЯ БРОНІ
+        // Підтвердження звільнення столу (Пароль)
+        document.getElementById('confirm-free-btn').onclick = () => {
+            const pass = document.getElementById('admin-pass-confirm').value;
+            if (pass === storedPassword) {
+                save(targetId, 'free', '', '', '', '');
+                hideAdminConfirm();
+            } else {
+                alert("Невірний пароль адміністратора!");
+            }
+        };
+
         document.getElementById('confirm-booking-btn').onclick = () => {
             const g = document.getElementById('book-guests').value, d = document.getElementById('book-date').value, t = document.getElementById('book-time').value;
-            if(!g || !d || !t) return customAlert("Увага", "Заповніть всі поля!");
-            save(targetId, 'reserved', g, d.split('-').reverse().join('.')+' о '+t);
-            document.getElementById('booking-modal').classList.add('hidden');
+            const pb = document.getElementById('preorder-bar').value, pk = document.getElementById('preorder-kitchen').value;
+            if(!g || !d || !t) return alert("Заповніть дані!");
+            save(targetId, 'reserved', g, d.split('-').reverse().join('.')+' о '+t, pb, pk);
+            hideBooking();
         };
-        window.hideBooking = () => document.getElementById('booking-modal').classList.add('hidden');
 
-        function save(id, status, guests, booking = "") {
+        document.getElementById('confirm-occupy-btn').onclick = () => {
+            const g = document.getElementById('occupy-guests').value;
+            save(targetId, 'occupied', g);
+            hideOccupy();
+        };
+
+        const hideBooking = () => document.getElementById('booking-modal').classList.add('hidden');
+        const hideOccupy = () => document.getElementById('occupy-modal').classList.add('hidden');
+        const hideAdminConfirm = () => document.getElementById('admin-confirm-modal').classList.add('hidden');
+        window.hideBooking = hideBooking; window.hideOccupy = hideOccupy; window.hideAdminConfirm = hideAdminConfirm;
+
+        function save(id, status, guests, booking = "", bar = "", kitchen = "") {
             update(ref(db, `tables/${id}`), {
-                status: status, guests: guests, bookingInfo: booking,
+                status, guests, bookingInfo: booking, preorderBar: bar, preorderKitchen: kitchen,
                 lastUpdate: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
-            }).catch(() => customAlert("Помилка", "Доступ до бази заборонено!"));
+            });
         }
 
-        // СИНХРОНІЗАЦІЯ
         onValue(ref(db, 'tables'), (snap) => {
             const data = snap.val() || {}; currentTablesData = data;
             const grid = document.getElementById('admin-grid'); grid.innerHTML = '';
             Object.keys(data).sort().forEach(id => {
                 const item = data[id];
-                const el = document.getElementById(`table-${id}`);
-                if(el) el.className = `table ${el.classList.contains('table-vertical')?'table-vertical':'table-horizontal'} ${item.status}`;
+                const cardClass = item.status === 'reserved' ? 'card-reserved' : (item.status === 'occupied' ? 'card-occupied' : '');
+                
                 grid.innerHTML += `
-                    <div class="table-card">
+                    <div class="table-card ${cardClass}">
                         <h3>Стіл ${id}</h3>
-                        <p style="font-size:0.85rem; color:#666">${item.status==='free'?'Вільний':(item.status==='occupied'?'👥 '+item.guests:item.bookingInfo)}</p>
-                        <div class="row" style="flex-direction:column; gap:5px;">
-                            <button style="background:#4caf50; border:none; color:white; padding:8px; border-radius:5px; width:100%; cursor:pointer;" onclick="setTableStatus('${id}','free')">Вільний</button>
-                            <button style="background:#ff5252; border:none; color:white; padding:8px; border-radius:5px; width:100%; cursor:pointer;" onclick="setTableStatus('${id}','occupied')">Зайняти</button>
-                            <button style="background:#fbc02d; border:none; color:var(--main-wood); padding:8px; border-radius:5px; width:100%; cursor:pointer;" onclick="setTableStatus('${id}','reserved')">Бронь</button>
+                        <p style="font-size:0.8rem; height:40px; overflow:hidden;">
+                            ${item.status === 'free' ? 'Вільний' : (item.status === 'occupied' ? '👥 '+item.guests : '🕒 '+item.bookingInfo)}
+                        </p>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+                            <button style="background:#4caf50; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer;" onclick="setTableStatus('${id}','occupied')">Зайняти</button>
+                            <button style="background:#fbc02d; border:none; padding:8px; border-radius:8px; cursor:pointer;" onclick="setTableStatus('${id}','reserved')">Бронь</button>
+                            <button style="background:#2196f3; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; grid-column: span 2;" onclick="openBookingModal('${id}')">📝 Редагувати бронь</button>
+                            <button style="background:#ff5252; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; grid-column: span 2; margin-top:5px;" onclick="setTableStatus('${id}','free')">🔓 Звільнити стіл</button>
                         </div>
                     </div>`;
             });
